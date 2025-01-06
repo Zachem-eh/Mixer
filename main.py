@@ -4,7 +4,7 @@ import sys
 
 
 pygame.init()
-size = width, height = 800, 800
+size = width, height = 900, 900
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 all_sprites = pygame.sprite.Group()
@@ -32,27 +32,45 @@ class Board(pygame.sprite.Sprite):
         board_group.add(self)
         self.width = _width
         self.height = _height
-        self.cell_size = screen.get_width() // (self.width + 1)
+        self.cell_size = screen.get_width() // (self.width + 4)
         self.image = pygame.Surface((self.width * self.cell_size, self.width * self.cell_size), pygame.SRCALPHA, 32)
         self.rect = self.image.get_rect()
-        self.rect = self.rect.move(self.cell_size // 2, self.cell_size // 2)
+        self.rect = self.rect.move((screen.get_width() - self.cell_size * self.width) / 2,
+                                   (screen.get_height() - self.cell_size * self.height) / 1.6)
         self.board = [[0] * _width for _ in range(_height)]
         for y in range(self.height):
             for x in range(self.width):
-                pygame.draw.rect(self.image, 'white',(self.cell_size * x,
+                pygame.draw.rect(self.image, 'black',(self.cell_size * x,
                                                    self.cell_size * y, self.cell_size, self.cell_size), 1)
 
     def update(self, *args):
         pass
 
+    def get_cell(self, mouse_pos):
+        x, y = mouse_pos
+        if (x < self.rect.x or x > self.rect.x + self.width * self.cell_size) or \
+                (y < self.rect.y or y > self.rect.y + self.height * self.cell_size):
+            return None
+        return (x - self.rect.x) // self.cell_size, (y - self.rect.y) // self.cell_size
 
+    def on_click(self, cell_coords):
+        print(cell_coords)
+
+    def get_click(self, mouse_pos):
+        cell = self.get_cell(mouse_pos)
+        self.on_click(cell)
+
+
+bg = load_image('kitchen.png')
 board = Board(all_sprites, 10, 10)
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    screen.fill('black')
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            board.get_click(event.pos)
+    screen.blit(bg, (0, 0))
     all_sprites.draw(screen)
     pygame.display.flip()
     all_sprites.update()
