@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+import random
 
 
 pygame.init()
@@ -9,6 +10,7 @@ screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 all_sprites = pygame.sprite.Group()
 board_group = pygame.sprite.Group()
+generators = pygame.sprite.Group()
 
 
 def load_image(name, colorkey=None):
@@ -33,12 +35,15 @@ class Board(pygame.sprite.Sprite):
         board_group.add(self)
         self.width = _width
         self.height = _height
-        self.cell_size = screen.get_width() // (self.width + 13)
+        self.cell_size = screen.get_width() // (self.width + 10)
+        print(self.cell_size)
         self.image = pygame.Surface((self.width * self.cell_size, self.width * self.cell_size), pygame.SRCALPHA, 32)
         self.rect = self.image.get_rect()
         self.rect = self.rect.move((screen.get_width() - self.cell_size * self.width) / 2,
                                    (screen.get_height() - self.cell_size * self.height) / 1.8)
         self.board = [[0] * _width for _ in range(_height)]
+        gen_x, gen_y = random.randrange(self.width), random.randrange(self.height)
+        self.board[gen_y][gen_x] = Generator(all_sprites, self, gen_x, gen_y)
         for y in range(self.height):
             for x in range(self.width):
                 pygame.draw.rect(self.image, 'black',(self.cell_size * x,
@@ -62,8 +67,23 @@ class Board(pygame.sprite.Sprite):
         self.on_click(cell)
 
 
+class Generator(pygame.sprite.Sprite):
+    image = load_image('veg.png')
+
+    def __init__(self, group, _board, x, y):
+        super().__init__(group)
+        generators.add(self)
+        self.board = _board
+        self.board_x = x
+        self.board_y = y
+        self.image = Generator.image
+        self.rect = self.image.get_rect()
+        self.rect.x = self.board.rect.x + self.board_x * self.board.cell_size
+        self.rect.y = self.board.rect.y + self.board_y * self.board.cell_size
+
+
 bg = load_image('kitchen.png')
-board = Board(all_sprites, 10, 10)
+board = Board(all_sprites, 8, 8)
 running = True
 while running:
     for event in pygame.event.get():
