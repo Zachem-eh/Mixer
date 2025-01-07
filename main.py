@@ -4,7 +4,7 @@ import sys
 
 
 pygame.init()
-size = width, height = 900, 900
+size = width, height = 1200, 1000
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 all_sprites = pygame.sprite.Group()
@@ -26,17 +26,18 @@ def load_image(name, colorkey=None):
         image = image.convert_alpha()
     return image
 
+
 class Board(pygame.sprite.Sprite):
     def __init__(self, group, _width, _height):
         super().__init__(group)
         board_group.add(self)
         self.width = _width
         self.height = _height
-        self.cell_size = screen.get_width() // (self.width + 4)
+        self.cell_size = screen.get_width() // (self.width + 13)
         self.image = pygame.Surface((self.width * self.cell_size, self.width * self.cell_size), pygame.SRCALPHA, 32)
         self.rect = self.image.get_rect()
         self.rect = self.rect.move((screen.get_width() - self.cell_size * self.width) / 2,
-                                   (screen.get_height() - self.cell_size * self.height) / 1.6)
+                                   (screen.get_height() - self.cell_size * self.height) / 1.8)
         self.board = [[0] * _width for _ in range(_height)]
         for y in range(self.height):
             for x in range(self.width):
