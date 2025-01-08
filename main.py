@@ -3,7 +3,6 @@ import os
 import sys
 import random
 
-
 pygame.init()
 size = width, height = 1200, 1000
 screen = pygame.display.set_mode(size)
@@ -36,7 +35,6 @@ class Board(pygame.sprite.Sprite):
         self.width = _width
         self.height = _height
         self.cell_size = screen.get_width() // (self.width + 10)
-        print(self.cell_size)
         self.image = pygame.Surface((self.width * self.cell_size, self.width * self.cell_size), pygame.SRCALPHA, 32)
         self.rect = self.image.get_rect()
         self.rect = self.rect.move((screen.get_width() - self.cell_size * self.width) / 2,
@@ -46,8 +44,8 @@ class Board(pygame.sprite.Sprite):
         self.board[gen_y][gen_x] = Generator(all_sprites, self, gen_x, gen_y)
         for y in range(self.height):
             for x in range(self.width):
-                pygame.draw.rect(self.image, 'black',(self.cell_size * x,
-                                                   self.cell_size * y, self.cell_size, self.cell_size), 1)
+                pygame.draw.rect(self.image, 'black', (self.cell_size * x,
+                                                       self.cell_size * y, self.cell_size, self.cell_size), 1)
 
     def update(self, *args):
         pass
@@ -60,7 +58,11 @@ class Board(pygame.sprite.Sprite):
         return (x - self.rect.x) // self.cell_size, (y - self.rect.y) // self.cell_size
 
     def on_click(self, cell_coords):
-        print(cell_coords)
+        if cell_coords is None:
+            return
+        x, y = cell_coords
+        if type(self.board[y][x]) == Generator:
+            self.board[y][x].generate()
 
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
@@ -76,10 +78,29 @@ class Generator(pygame.sprite.Sprite):
         self.board = _board
         self.board_x = x
         self.board_y = y
+        self.energy = 25
         self.image = Generator.image
         self.rect = self.image.get_rect()
         self.rect.x = self.board.rect.x + self.board_x * self.board.cell_size
         self.rect.y = self.board.rect.y + self.board_y * self.board.cell_size
+
+    def generate(self):
+        if self.energy > 0:
+            self.energy -= 1
+            left, right = -1, 1
+            while True:
+                for dy in [left, 0, right]:
+                    for dx in [left, 0, right]:
+                        if 0 <= self.board_x + dx < self.board.width and\
+                                0 <= self.board_y + dy < self.board.height and\
+                                self.board.board[self.board_y + dy][self.board_x + dx] == 0 and\
+                                not (dy == 0 and dx == 0):
+                                print(self.board_y + dy, self.board_x + dx)
+                                return
+                left, right = left - 1, right + 1
+        else:
+            self.energy = 25
+            pass
 
 
 bg = load_image('kitchen.png')
