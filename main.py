@@ -10,6 +10,7 @@ clock = pygame.time.Clock()
 all_sprites = pygame.sprite.Group()
 board_group = pygame.sprite.Group()
 generators = pygame.sprite.Group()
+foods = pygame.sprite.Group()
 
 
 def load_image(name, colorkey=None):
@@ -70,7 +71,7 @@ class Board(pygame.sprite.Sprite):
 
 
 class Generator(pygame.sprite.Sprite):
-    image = load_image('veg.png')
+    image = load_image('gen_veg.png')
 
     def __init__(self, group, _board, x, y):
         super().__init__(group)
@@ -88,19 +89,42 @@ class Generator(pygame.sprite.Sprite):
         if self.energy > 0:
             self.energy -= 1
             left, right = -1, 1
+            dx_dy_list = [-1, 0, 1]
             while True:
-                for dy in [left, 0, right]:
-                    for dx in [left, 0, right]:
+                if right > self.board.width:
+                    return
+                for dy in dx_dy_list:
+                    for dx in dx_dy_list:
                         if 0 <= self.board_x + dx < self.board.width and\
                                 0 <= self.board_y + dy < self.board.height and\
                                 self.board.board[self.board_y + dy][self.board_x + dx] == 0 and\
                                 not (dy == 0 and dx == 0):
-                                print(self.board_y + dy, self.board_x + dx)
+                                self.board.board[self.board_y + dy][self.board_x + dx] =(
+                                    Food(all_sprites, self.board, self.board_x + dx, self.board_y + dy))
                                 return
                 left, right = left - 1, right + 1
+                dx_dy_list.append(left)
+                dx_dy_list.append(right)
+                dx_dy_list.sort()
         else:
             self.energy = 25
-            pass
+
+
+class Food(pygame.sprite.Sprite):
+    graduation = ['tomate.png', 'cucumber.png', 'carrot.png', 'peper.png', 'potato.png']
+
+    def __init__(self, group, _board, x, y):
+        super().__init__(group)
+        generators.add(self)
+        self.board = _board
+        self.board_x = x
+        self.board_y = y
+        self.energy = 25
+        self.level_gr = 0
+        self.image = load_image(Food.graduation[self.level_gr])
+        self.rect = self.image.get_rect()
+        self.rect.x = self.board.rect.x + self.board_x * self.board.cell_size
+        self.rect.y = self.board.rect.y + self.board_y * self.board.cell_size
 
 
 bg = load_image('kitchen.png')
