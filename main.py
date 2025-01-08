@@ -11,6 +11,7 @@ all_sprites = pygame.sprite.Group()
 board_group = pygame.sprite.Group()
 generators = pygame.sprite.Group()
 foods = pygame.sprite.Group()
+movable_sprites = pygame.sprite.Group()
 
 
 def load_image(name, colorkey=None):
@@ -76,6 +77,7 @@ class Generator(pygame.sprite.Sprite):
     def __init__(self, group, _board, x, y):
         super().__init__(group)
         generators.add(self)
+        movable_sprites.add(self)
         self.board = _board
         self.board_x = x
         self.board_y = y
@@ -115,12 +117,13 @@ class Food(pygame.sprite.Sprite):
 
     def __init__(self, group, _board, x, y):
         super().__init__(group)
-        generators.add(self)
+        foods.add(self)
+        movable_sprites.add(self)
         self.board = _board
         self.board_x = x
         self.board_y = y
         self.energy = 25
-        self.level_gr = 0
+        self.level_gr = random.randrange(2)
         self.image = load_image(Food.graduation[self.level_gr])
         self.rect = self.image.get_rect()
         self.rect.x = self.board.rect.x + self.board_x * self.board.cell_size
@@ -129,13 +132,49 @@ class Food(pygame.sprite.Sprite):
 
 bg = load_image('kitchen.png')
 board = Board(all_sprites, 8, 8)
+take = False
+sprite_take = None
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            board.get_click(event.pos)
+            if event.button == pygame.BUTTON_LEFT:
+                board.get_click(event.pos)
+            elif event.button == pygame.BUTTON_RIGHT and board.get_cell(event.pos):
+                x_, y_ = board.get_cell(event.pos)
+                if board.board[y_][x_] != 0:
+                    take_pos = event.pos
+                    take = True
+                    sprite_take = board.board[y_][x_]
+        if event.type == pygame.MOUSEMOTION and take:
+            dx_ = event.pos[0] - take_pos[0]
+            dy_ = event.pos[1] - take_pos[1]
+            sprite_take.rect.x += dx_
+            sprite_take.rect.y += dy_
+            take_pos = [take_pos[0] + dx_, take_pos[1] + dy_]
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == pygame.BUTTON_RIGHT:
+                if board.get_cell(event.pos) and sprite_take:
+                    x_, y_ = board.get_cell(event.pos)
+                    if board.board[y_][x_] == 0:
+                        board.board[sprite_take.board_y][sprite_take.board_x] = 0
+                        sprite_take.rect.x = board.rect.x + board.cell_size * x_
+                        sprite_take.rect.y = board.rect.y + board.cell_size * y_
+                        sprite_take.board_x = x_
+                        sprite_take.board_y = y_
+                        board.board[sprite_take.board_y][sprite_take.board_x] = sprite_take
+                    else:
+                        if sprite_take:
+                            sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
+                            sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
+                else:
+                    if sprite_take:
+                        sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
+                        sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
+            take = False
+            sprite_take = None
     screen.blit(bg, (0, 0))
     all_sprites.draw(screen)
     pygame.display.flip()
