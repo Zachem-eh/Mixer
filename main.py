@@ -165,10 +165,23 @@ while running:
                         sprite_take.board_x = x_
                         sprite_take.board_y = y_
                         board.board[sprite_take.board_y][sprite_take.board_x] = sprite_take
-                    else:
-                        if sprite_take:
-                            sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
-                            sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
+                    elif type(board.board[y_][x_]) == type(sprite_take) == Food and\
+                            sprite_take.level_gr == board.board[y_][x_].level_gr and\
+                            sprite_take.level_gr < len(Food.graduation) - 1 and\
+                            not (sprite_take.board_x == x_ and sprite_take.board_y == y_):
+                        board.board[sprite_take.board_y][sprite_take.board_x] = 0
+                        board.board[y_][x_].kill()
+                        board.board[y_][x_] = 0
+                        sprite_take.rect.x = board.rect.x + board.cell_size * x_
+                        sprite_take.rect.y = board.rect.y + board.cell_size * y_
+                        sprite_take.level_gr += 1
+                        sprite_take.image = load_image(Food.graduation[sprite_take.level_gr])
+                        sprite_take.board_x = x_
+                        sprite_take.board_y = y_
+                        board.board[sprite_take.board_y][sprite_take.board_x] = sprite_take
+                    elif sprite_take:
+                        sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
+                        sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
                 else:
                     if sprite_take:
                         sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
