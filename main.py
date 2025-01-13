@@ -1,7 +1,8 @@
-import pygame
 import os
-import sys
 import random
+import sys
+
+import pygame
 
 pygame.init()
 size = width, height = 1200, 1000
@@ -97,13 +98,13 @@ class Generator(pygame.sprite.Sprite):
                     return
                 for dy in dx_dy_list:
                     for dx in dx_dy_list:
-                        if 0 <= self.board_x + dx < self.board.width and\
-                                0 <= self.board_y + dy < self.board.height and\
-                                self.board.board[self.board_y + dy][self.board_x + dx] == 0 and\
+                        if 0 <= self.board_x + dx < self.board.width and \
+                                0 <= self.board_y + dy < self.board.height and \
+                                self.board.board[self.board_y + dy][self.board_x + dx] == 0 and \
                                 not (dy == 0 and dx == 0):
-                                self.board.board[self.board_y + dy][self.board_x + dx] =(
-                                    Food(all_sprites, self.board, self.board_x + dx, self.board_y + dy))
-                                return
+                            self.board.board[self.board_y + dy][self.board_x + dx] = (
+                                Food(all_sprites, self.board, self.board_x + dx, self.board_y + dy))
+                            return
                 left, right = left - 1, right + 1
                 dx_dy_list.append(left)
                 dx_dy_list.append(right)
