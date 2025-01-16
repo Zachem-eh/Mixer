@@ -46,7 +46,7 @@ def _load_game(path):
     """
     Загружает (импортирует) игру
     Args:
-        path: путь к папке с игрой
+        path: путь к папке с игрой (название папки)
     """
     _module_game = import_module(f"games.{path}.game")
     for attr in ("post_loop_step", "handler_event", "init"):
