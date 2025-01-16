@@ -5,21 +5,19 @@ import pygame
 
 pygame.init()
 
-BIRD_SIZE = 40
-PIPE_WIDTH = 60
-PIPE_HEIGHT = 106
-GAP = 150
-PIPES_COUNT = 6
+PIPE_WIDTH = 80
+PIPE_HEIGHT = 300
+PIPES_COUNT = 5
 LIGHTNING_SIZE = 40
 BIRD_SPEED = 0.5
 
-
-SCREEN_WIDTH = PIPES_COUNT * (PIPE_WIDTH + 50) + 400
-SCREEN_HEIGHT = 350
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 550
 
 size = width, height = SCREEN_WIDTH, SCREEN_HEIGHT
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Flappy Bird")
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -41,8 +39,8 @@ class Bird(pygame.sprite.Sprite):
     def __init__(self, *groups):
         super().__init__(*groups)
         self.image = load_image("bird.png", -1)
-        self.image = pygame.transform.scale(self.image, (BIRD_SIZE, BIRD_SIZE))
         self.rect = self.image.get_rect(center=(100, height // 2))
+        self.mask = pygame.mask.from_surface(self.image)
         self.gravity = 0
         self.jump_speed = -5
 
@@ -65,6 +63,7 @@ class Pipe(pygame.sprite.Sprite):
         if is_top:
             self.image = pygame.transform.flip(self.image, False, True)
         self.rect = self.image.get_rect(midtop=(x, y) if not is_top else (x, y - self.image.get_height()))
+        self.mask = pygame.mask.from_surface(self.image)
 
 
 class Lightning(pygame.sprite.Sprite):
@@ -73,6 +72,7 @@ class Lightning(pygame.sprite.Sprite):
         self.image = load_image("lightning.png", -1)
         self.image = pygame.transform.scale(self.image, (LIGHTNING_SIZE, LIGHTNING_SIZE))
         self.rect = self.image.get_rect(center=(x, y))
+        self.mask = pygame.mask.from_surface(self.image)
 
 
 all_sprites = pygame.sprite.Group()
@@ -81,17 +81,25 @@ lightnings = pygame.sprite.Group()
 
 bird = Bird(all_sprites)
 
+
 def create_static_pipes():
+    previous_gap_center = random.randint(200, 350)
     for i in range(PIPES_COUNT):
         x = 200 + i * (PIPE_WIDTH + 50)
-        gap_center = random.randint(150, height - 150)
-        top_pipe = Pipe(x, gap_center - GAP // 2, True, all_sprites, pipes)
-        bottom_pipe = Pipe(x, gap_center + GAP // 2, False, all_sprites, pipes)
+        gap = random.randint(150, 200)
+        gap_center = previous_gap_center + random.randint(-50, 50)
+        gap_center = max(100 + gap // 2, min(height - 100 - gap // 2, gap_center))
+
+        top_pipe = Pipe(x, gap_center - gap // 2, True, all_sprites, pipes)
+        bottom_pipe = Pipe(x, gap_center + gap // 2, False, all_sprites, pipes)
+        previous_gap_center = gap_center
+
 
 def create_lightning():
-    x = 200 + PIPES_COUNT * (PIPE_WIDTH + 50) + 50
-    y = random.randint(100, height - 100)
+    x = 900
+    y = random.randint(250, height - 250)
     Lightning(x, y, all_sprites, lightnings)
+
 
 create_static_pipes()
 create_lightning()
@@ -111,13 +119,13 @@ while running:
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 bird.jump()
 
-    screen.fill((135, 206, 235))
+    screen.fill((135, 200, 235))
 
     if not game_over:
-        if pygame.sprite.spritecollide(bird, pipes, False):
+        if pygame.sprite.spritecollide(bird, pipes, False, pygame.sprite.collide_mask):
             game_over = True
 
-        if pygame.sprite.spritecollide(bird, lightnings, True):
+        if pygame.sprite.spritecollide(bird, lightnings, True, pygame.sprite.collide_mask):
             collected_lightning = True
 
         if not bird.alive() or bird.rect.right > SCREEN_WIDTH:
