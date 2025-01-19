@@ -38,13 +38,15 @@ class Ball(pygame.sprite.Sprite):
 
     def update(self):
         self.rect = self.rect.move(self.vx, self.vy)
-        if pygame.sprite.spritecollideany(self, horizontal_borders):
+        if (pygame.sprite.spritecollideany(self, horizontal_borders) or
+                pygame.sprite.spritecollideany(self, platform_group)):
             self.vy = -self.vy
         if pygame.sprite.spritecollideany(self, vertical_borders):
             self.vx = -self.vx
-        if pygame.sprite.spritecollideany(self, platform_group):
+        if pygame.sprite.spritecollideany(self, blocks):
             self.vy = -self.vy
-        elif not self.rect.colliderect(screen_rect):
+            pygame.sprite.spritecollideany(self, blocks).kill()
+        if not self.rect.colliderect(screen_rect):
                     self.kill()
 
 
@@ -65,8 +67,8 @@ class Block(pygame.sprite.Sprite):
     def __init__(self, group, pos):
         super().__init__(group)
         self.add(blocks)
-        self.image = pygame.Surface((100, 20), pygame.SRCALPHA, 32)
-        pygame.draw.rect(self.image, 'black', (0, 0, 100, 20))
+        self.image = pygame.Surface((50, 20), pygame.SRCALPHA, 32)
+        pygame.draw.rect(self.image, 'white', (0, 0, 50, 20))
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
@@ -99,10 +101,16 @@ def init():
     Border(5, 5, const.screen.get_width() - 5, 5)
     Border(5, 5, 5, const.screen.get_height() - 5)
     Border(const.screen.get_width() - 5, 5, const.screen.get_width() - 5, const.screen.get_height() - 5)
-    Block(all_sprites, (const.screen.get_width() // 2 - 50, const.screen.get_height() // 2 - 10))
     platform = Platform(all_sprites, (const.screen.get_width() // 2 - 50, const.screen.get_height() * 3 / 4))
     ball = Ball(20, const.screen.get_width() // 2, const.screen.get_height() // 2)
     press = [False, None]
+    y_0 = const.screen.get_height() // 20 * 4
+    for y in range(5):
+        y_0 += 21
+        x_0 = const.screen.get_width() // 50 * 10
+        for x in range(10):
+            Block(all_sprites, (x_0, y_0))
+            x_0 += 51
 
 
 def post_loop_step():
@@ -114,5 +122,3 @@ def post_loop_step():
     if press[0]:
         platform.update(press[1])
     clock.tick(fps)
-
-
