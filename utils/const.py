@@ -4,7 +4,7 @@ POST_LOOP_STEP = lambda: ...  # функция, которая вызывает�
 HANDLER_EVENT = lambda evevnt: ...  # функция обработчик событий
 
 SCREEN_WIDTH = 700  # ширина экрана
-SCREEN_HEIGHT = 350 # высота экрана
+SCREEN_HEIGHT = 700 # высота экрана
 
 SIZE = width, height = SCREEN_WIDTH, SCREEN_HEIGHT
 

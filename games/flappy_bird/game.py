@@ -1,5 +1,3 @@
-import os
-import sys
 import random
 
 import pygame
@@ -8,9 +6,11 @@ from utils import const
 from utils.const import height, width, SCREEN_WIDTH
 from utils.tools import load_image
 
-PIPE_WIDTH = 80
-PIPE_HEIGHT = 300
-PIPES_COUNT = 5
+BIRD_SIZE = 40
+PIPE_WIDTH = 60
+PIPE_HEIGHT = 106
+GAP = 150
+PIPES_COUNT = 6
 LIGHTNING_SIZE = 40
 BIRD_SPEED = 0.5
 
@@ -19,6 +19,7 @@ class Bird(pygame.sprite.Sprite):
     def __init__(self, *groups):
         super().__init__(*groups)
         self.image = load_image("bird.png", -1)
+        self.image = pygame.transform.scale(self.image, (BIRD_SIZE, BIRD_SIZE))
         self.rect = self.image.get_rect(center=(100, height // 2))
         self.mask = pygame.mask.from_surface(self.image)
         self.gravity = 0
@@ -67,28 +68,20 @@ def init():
 
     bird = Bird(all_sprites)
 
+    def create_static_pipes():
+        for i in range(PIPES_COUNT):
+            x = 200 + i * (PIPE_WIDTH + 50)
+            gap_center = random.randint(150, height - 150)
+            top_pipe = Pipe(x, gap_center - GAP // 2, True, all_sprites, pipes)
+            bottom_pipe = Pipe(x, gap_center + GAP // 2, False, all_sprites, pipes)
 
-def create_static_pipes():
-    previous_gap_center = random.randint(200, 350)
-    for i in range(PIPES_COUNT):
-        x = 200 + i * (PIPE_WIDTH + 50)
-        gap = random.randint(150, 200)
-        gap_center = previous_gap_center + random.randint(-50, 50)
-        gap_center = max(100 + gap // 2, min(height - 100 - gap // 2, gap_center))
+    def create_lightning():
+        x = 200 + PIPES_COUNT * (PIPE_WIDTH + 50) + 50
+        y = random.randint(100, height - 100)
+        Lightning(x, y, all_sprites, lightnings)
 
-        top_pipe = Pipe(x, gap_center - gap // 2, True, all_sprites, pipes)
-        bottom_pipe = Pipe(x, gap_center + gap // 2, False, all_sprites, pipes)
-        previous_gap_center = gap_center
-
-
-def create_lightning():
-    x = 900
-    y = random.randint(250, height - 250)
-    Lightning(x, y, all_sprites, lightnings)
-
-
-create_static_pipes()
-create_lightning()
+    create_static_pipes()
+    create_lightning()
 
     clock = pygame.time.Clock()
     game_over = False

@@ -52,12 +52,13 @@ def _load_game(path):
     for attr in ("post_loop_step", "handler_event", "init"):
         if not hasattr(_module_game, attr):
             raise ValueError(f'Не найдено поле "{attr}" в игре {path}')
+    init_func = _module_game.init if hasattr(_module_game, "init") else None
     return GameObject(
         _module_game,
         path,
         _module_game.post_loop_step,
         _module_game.handler_event,
-        _module_game.init
+        init_func
     )
 
 class GameObjectsMap:
@@ -69,6 +70,12 @@ class GameObjectsMap:
         games: dict[str, 'GameObject'] = {}
     ):
         self.games = games
+
+    def __iter__(self):
+        return iter(self.games.values())
+
+    def __getitem__(self, index):
+        return list(self.games.values())[index]
 
     def run_game(self, index: int = 0):
         """
