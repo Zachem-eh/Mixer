@@ -108,8 +108,19 @@ class Food(pygame.sprite.Sprite):
         self.rect.y = self.board.rect.y + self.board_y * self.board.cell_size
 
 
+class Trash(pygame.sprite.Sprite):
+    def __init__(self, group):
+        super().__init__(group)
+        trash_group.add(self)
+        self.image = load_image('trash.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 1000
+        self.rect.y = 700
+
+
+
 def handler_event(event):
-    global take, sprite_take, take_pos
+    global take, sprite_take, take_pos, trash_group
     if event.type == pygame.MOUSEBUTTONDOWN:
         if event.button == pygame.BUTTON_LEFT:
             board.get_click(event.pos)
@@ -155,14 +166,19 @@ def handler_event(event):
                     sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
             else:
                 if sprite_take:
-                    sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
-                    sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
+                    if pygame.sprite.spritecollideany(sprite_take, trash_group) and type(sprite_take) != Generator:
+                        board.board[sprite_take.board_y][sprite_take.board_x] = 0
+                        sprite_take.kill()
+                    else:
+                        sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
+                        sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
         take = False
         sprite_take = None
 
 
 def init():
-    global sprite_take, take, bg, board, clock, all, all_sprites, board_group, generators, foods, movable_sprites
+    global sprite_take, take, bg, board, clock, all, all_sprites, board_group, generators, foods, movable_sprites,\
+        trash_group
     _size = _width, _height = 1200, 1000
 
     const.screen = pygame.display.set_mode(_size)
@@ -172,8 +188,10 @@ def init():
     generators = pygame.sprite.Group()
     foods = pygame.sprite.Group()
     movable_sprites = pygame.sprite.Group()
+    trash_group = pygame.sprite.Group()
 
     bg = load_image('kitchen.png')
+    trash = Trash(all_sprites)
     board = Board(all_sprites, 8, 8)
     take = False
     sprite_take = None
