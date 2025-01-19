@@ -1,9 +1,10 @@
-import os
-import sys
 import random
+
 import pygame
 
-pygame.init()
+from utils import const
+from utils.const import height, width, SCREEN_WIDTH
+from utils.tools import load_image
 
 BIRD_SIZE = 40
 PIPE_WIDTH = 60
@@ -12,29 +13,6 @@ GAP = 150
 PIPES_COUNT = 6
 LIGHTNING_SIZE = 40
 BIRD_SPEED = 0.5
-
-
-SCREEN_WIDTH = PIPES_COUNT * (PIPE_WIDTH + 50) + 400
-SCREEN_HEIGHT = 350
-
-size = width, height = SCREEN_WIDTH, SCREEN_HEIGHT
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Flappy Bird")
-
-def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
-    if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
-        sys.exit()
-    image = pygame.image.load(fullname)
-    if colorkey is not None:
-        image = image.convert()
-        if colorkey == -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey)
-    else:
-        image = image.convert_alpha()
-    return image
 
 
 class Bird(pygame.sprite.Sprite):
@@ -75,43 +53,50 @@ class Lightning(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(x, y))
 
 
-all_sprites = pygame.sprite.Group()
-pipes = pygame.sprite.Group()
-lightnings = pygame.sprite.Group()
+def init():
+    global all_sprites, pipes, lightnings, bird, game_over, collected_lightning, clock
+    pygame.display.set_caption("Flappy Bird")
+    all_sprites = pygame.sprite.Group()
+    pipes = pygame.sprite.Group()
+    lightnings = pygame.sprite.Group()
 
-bird = Bird(all_sprites)
+    size = PIPES_COUNT * (PIPE_WIDTH + 50) + 400, 350
+    const.screen = pygame.display.set_mode(size)
 
-def create_static_pipes():
-    for i in range(PIPES_COUNT):
-        x = 200 + i * (PIPE_WIDTH + 50)
-        gap_center = random.randint(150, height - 150)
-        top_pipe = Pipe(x, gap_center - GAP // 2, True, all_sprites, pipes)
-        bottom_pipe = Pipe(x, gap_center + GAP // 2, False, all_sprites, pipes)
+    bird = Bird(all_sprites)
 
-def create_lightning():
-    x = 200 + PIPES_COUNT * (PIPE_WIDTH + 50) + 50
-    y = random.randint(100, height - 100)
-    Lightning(x, y, all_sprites, lightnings)
+    def create_static_pipes():
+        for i in range(PIPES_COUNT):
+            x = 200 + i * (PIPE_WIDTH + 50)
+            gap_center = random.randint(150, height - 150)
+            top_pipe = Pipe(x, gap_center - GAP // 2, True, all_sprites, pipes)
+            bottom_pipe = Pipe(x, gap_center + GAP // 2, False, all_sprites, pipes)
 
-create_static_pipes()
-create_lightning()
+    def create_lightning():
+        x = 200 + PIPES_COUNT * (PIPE_WIDTH + 50) + 50
+        y = random.randint(100, height - 100)
+        Lightning(x, y, all_sprites, lightnings)
 
-clock = pygame.time.Clock()
-running = True
-game_over = False
-collected_lightning = False
+    create_static_pipes()
+    create_lightning()
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                bird.jump()
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                bird.jump()
+    clock = pygame.time.Clock()
+    game_over = False
+    collected_lightning = False
 
-    screen.fill((135, 206, 235))
+
+def handler_event(event):
+    global bird
+    if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            bird.jump()
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            bird.jump()
+
+
+def post_loop_step():
+    global game_over, collected_lightning
+    const.screen.fill((135, 206, 235))
 
     if not game_over:
         if pygame.sprite.spritecollide(bird, pipes, False):
@@ -125,18 +110,16 @@ while running:
 
         all_sprites.update()
 
-    all_sprites.draw(screen)
+    all_sprites.draw(const.screen)
 
     if game_over:
         font = pygame.font.Font(None, 74)
         text = font.render("Game Over", True, (255, 0, 0))
-        screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
+        const.screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
     elif collected_lightning:
         font = pygame.font.Font(None, 74)
         text = font.render("You Win!", True, (0, 255, 0))
-        screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
+        const.screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
 
     pygame.display.flip()
     clock.tick(60)
-
-pygame.quit()
