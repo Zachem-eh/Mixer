@@ -5,7 +5,7 @@ from games import base
 pygame.init()
 games_map = base.load_games()
 
-games_map.run_game(-1)
+games_map.run_game(0)
 
 running = True
 while running:

@@ -125,11 +125,11 @@ def post_loop_step():
     if game_over:
         font = pygame.font.Font(None, 74)
         text = font.render("Game Over", True, (255, 0, 0))
-        const.screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
+        const.screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 2 - text.get_height() // 2))
     elif collected_lightning:
         font = pygame.font.Font(None, 74)
         text = font.render("You Win!", True, (0, 255, 0))
-        const.screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
+        const.screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 2 - text.get_height() // 2))
 
     pygame.display.flip()
     clock.tick(60)
