@@ -19,35 +19,55 @@ class Platform(pygame.sprite.Sprite):
     def update(self, *args):
         if args:
             if args[0] == pygame.K_LEFT and self.rect.x - 10 >= 0:
-                self.rect = self.rect.move(-10, 0)
+                self.rect = self.rect.move(-2, 0)
             elif args[0] == pygame.K_RIGHT and self.rect.x + 10 + self.rect.width <= const.screen.get_width():
-                self.rect = self.rect.move(10, 0)
+                self.rect = self.rect.move(2, 0)
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, radius, x, y):
+    def __init__(self, x, y):
         super().__init__(all_sprites)
-        self.radius = radius
-        self.image = pygame.Surface((2 * radius, 2 * radius),
-                                    pygame.SRCALPHA, 32)
-        pygame.draw.circle(self.image, pygame.Color("red"),
-                           (radius, radius), radius)
-        self.rect = pygame.Rect(x, y, 2 * radius, 2 * radius)
-        self.vx = random.randint(-10,-5)
-        self.vy = random.randrange(-10, -5)
+        self.image = load_image('ball.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.mask = pygame.mask.from_surface(self.image)
+        self.vx = random.choice([-1, 1])
+        self.vy = -1
 
     def update(self):
         self.rect = self.rect.move(self.vx, self.vy)
+        if pygame.sprite.spritecollideany(self, blocks):
+            spr_coll = pygame.sprite.spritecollideany(self, blocks)
+            if pygame.sprite.spritecollideany(self, horizontal_borders) and \
+                    pygame.sprite.spritecollideany(self, vertical_borders):
+                hor_spr = pygame.sprite.spritecollideany(self, horizontal_borders)
+                offset_hor = hor_spr.rect.x - self.rect.x, hor_spr.rect.y - self.rect.y
+                ver_spr = pygame.sprite.spritecollideany(self, vertical_borders)
+                offset_ver = ver_spr.rect.x - self.rect.x, ver_spr.rect.y - self.rect.y
+                if self.mask.overlap_area(hor_spr.mask, offset_hor) > self.mask.overlap_area(ver_spr.mask, offset_ver):
+                    self.vy = -self.vy
+                elif self.mask.overlap_area(hor_spr.mask, offset_hor) < self.mask.overlap_area(ver_spr.mask, offset_ver):
+                    self.vx = -self.vx
+                else:
+                    self.vy = -self.vy
+                    self.vx = -self.vx
+            elif pygame.sprite.spritecollideany(self, horizontal_borders):
+                self.vy = -self.vy
+            elif pygame.sprite.spritecollideany(self, vertical_borders):
+                self.vx = -self.vx
+            spr_coll.border_left.kill()
+            spr_coll.border_right.kill()
+            spr_coll.border_up.kill()
+            spr_coll.border_down.kill()
+            spr_coll.kill()
         if (pygame.sprite.spritecollideany(self, horizontal_borders) or
                 pygame.sprite.spritecollideany(self, platform_group)):
             self.vy = -self.vy
         if pygame.sprite.spritecollideany(self, vertical_borders):
             self.vx = -self.vx
-        if pygame.sprite.spritecollideany(self, blocks):
-            self.vy = -self.vy
-            pygame.sprite.spritecollideany(self, blocks).kill()
         if not self.rect.colliderect(screen_rect):
-                    self.kill()
+            self.kill()
 
 
 class Border(pygame.sprite.Sprite):
@@ -61,17 +81,23 @@ class Border(pygame.sprite.Sprite):
             self.add(horizontal_borders)
             self.image = pygame.Surface([x2 - x1, 1])
             self.rect = pygame.Rect(x1, y1, x2 - x1, 1)
+        self.mask = pygame.mask.from_surface(self.image)
 
 
 class Block(pygame.sprite.Sprite):
     def __init__(self, group, pos):
         super().__init__(group)
         self.add(blocks)
-        self.image = pygame.Surface((50, 20), pygame.SRCALPHA, 32)
-        pygame.draw.rect(self.image, 'white', (0, 0, 50, 20))
+        self.image = pygame.Surface((100, 40), pygame.SRCALPHA, 32)
+        pygame.draw.rect(self.image, 'blue', (0, 0, 100, 40))
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
+        self.border_left = Border(pos[0], pos[1], pos[0], pos[1] + self.rect.height)
+        self.border_right = Border(pos[0] + self.rect.width - 1, pos[1], pos[0] + self.rect.width - 1, pos[1] +
+                                   self.rect.height)
+        self.border_up = Border(pos[0], pos[1], pos[0] + self.rect.width, pos[1])
+        self.border_down = Border(pos[0], pos[1] + self.rect.height - 1, pos[0] + self.rect.width, pos[1] + self.rect.height - 1)
 
 
 def handler_event(event):
@@ -96,26 +122,26 @@ def init():
     horizontal_borders = pygame.sprite.Group()
     vertical_borders = pygame.sprite.Group()
     blocks = pygame.sprite.Group()
-    fps = 30
+    fps = 200
 
     Border(5, 5, const.screen.get_width() - 5, 5)
     Border(5, 5, 5, const.screen.get_height() - 5)
     Border(const.screen.get_width() - 5, 5, const.screen.get_width() - 5, const.screen.get_height() - 5)
     platform = Platform(all_sprites, (const.screen.get_width() // 2 - 50, const.screen.get_height() * 3 / 4))
-    ball = Ball(20, const.screen.get_width() // 2, const.screen.get_height() // 2)
+    ball = Ball(const.screen.get_width() // 2, const.screen.get_height() // 2)
     press = [False, None]
     y_0 = const.screen.get_height() // 20 * 4
     for y in range(5):
-        y_0 += 21
-        x_0 = const.screen.get_width() // 50 * 10
+        y_0 += 41
+        x_0 = (const.screen.get_width() / 100 - 10) / 2 * 100
         for x in range(10):
             Block(all_sprites, (x_0, y_0))
-            x_0 += 51
+            x_0 += 101
 
 
 def post_loop_step():
     global all_sprites, fps, clock
-    const.screen.fill('black')
+    const.screen.fill('white')
     all_sprites.draw(const.screen)
     pygame.display.flip()
     all_sprites.update()
