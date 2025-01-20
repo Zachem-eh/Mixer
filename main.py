@@ -5,7 +5,7 @@ from games import base
 pygame.init()
 games_map = base.load_games()
 
-games_map.run_game(0) # для проверки игр меняйте индекс в этой строке
+games_map.run_game(-1) # для проверки игр меняйте индекс в этой строке
 
 running = True
 while running:
