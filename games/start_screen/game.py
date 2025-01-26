@@ -3,7 +3,7 @@ from utils.db import db
 from utils import const
 from animations.shaurma import add_animation
 
-FPS = 25
+FPS = 10
 WIDTH, HEIGHT = size = 1000, 600
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()

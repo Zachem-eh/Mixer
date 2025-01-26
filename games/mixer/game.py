@@ -115,9 +115,26 @@ class Trash(pygame.sprite.Sprite):
         self.rect.y = 700
 
 
+class Purpose(pygame.sprite.Sprite):
+    def __init__(self, group):
+        super().__init__(group)
+        purpose_group.add(self)
+        self.image = load_image('purpose.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 350
+        self.rect.y = 10
+        self.count = 10
+
+    def draw_num(self):
+        self.font = pygame.font.Font(None, 74)
+        self.text = self.font.render(str(self.count), True, (0, 0, 0))
+        const.screen.blit(self.text,
+                         (350 + 300, 25))
+
+
 
 def handler_event(event):
-    global take, sprite_take, take_pos, trash_group
+    global take, sprite_take, take_pos, trash_group, purpose_group, purpose
     if event.type == pygame.MOUSEBUTTONDOWN:
         if event.button == pygame.BUTTON_LEFT:
             board.get_click(event.pos)
@@ -166,6 +183,11 @@ def handler_event(event):
                     if pygame.sprite.spritecollideany(sprite_take, trash_group) and type(sprite_take) != Generator:
                         board.board[sprite_take.board_y][sprite_take.board_x] = 0
                         sprite_take.kill()
+                    elif pygame.sprite.spritecollideany(sprite_take, purpose_group) and type(sprite_take) == Food and \
+                        sprite_take.level_gr == 4:
+                        purpose.count -= 1
+                        board.board[sprite_take.board_y][sprite_take.board_x] = 0
+                        sprite_take.kill()
                     else:
                         sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
                         sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
@@ -175,7 +197,7 @@ def handler_event(event):
 
 def init():
     global sprite_take, take, bg, board, clock, all, all_sprites, board_group, generators, foods, movable_sprites,\
-        trash_group
+        trash_group, trash, purpose, purpose_group
     _size = _width, _height = 1200, 1000
     const.screen = resize_screen(*_size)
 
@@ -186,18 +208,21 @@ def init():
     foods = pygame.sprite.Group()
     movable_sprites = pygame.sprite.Group()
     trash_group = pygame.sprite.Group()
+    purpose_group = pygame.sprite.Group()
 
 
     bg = load_image('kitchen.png')
     trash = Trash(all_sprites)
+    purpose = Purpose(all_sprites)
     board = Board(all_sprites, 8, 8)
     take = False
     sprite_take = None
 
 
 def post_loop_step():
-    global all_sprites, bg
+    global all_sprites, bg, purpose
     const.screen.blit(bg, (0, 0))
     all_sprites.draw(const.screen)
+    purpose.draw_num()
     pygame.display.flip()
     all_sprites.update()
