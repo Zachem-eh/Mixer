@@ -92,11 +92,12 @@ class Block(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
-        self.border_left = Border(pos[0], pos[1] + 1, pos[0], pos[1] + self.rect.height - 1)
-        self.border_right = Border(pos[0] + self.rect.width - 2, pos[1] + 1, pos[0] + self.rect.width - 2, pos[1] +
-                                   self.rect.height - 1)
-        self.border_up = Border(pos[0] + 1, pos[1], pos[0] + self.rect.width - 1, pos[1])
-        self.border_down = Border(pos[0] + 1, pos[1] + self.rect.height - 2, pos[0] + self.rect.width - 1, pos[1] + self.rect.height - 2)
+        self.border_left = Border(pos[0], pos[1] + 2, pos[0], pos[1] + self.rect.height - 2)
+        self.border_right = Border(pos[0] + self.rect.width - 2, pos[1] + 2, pos[0] + self.rect.width - 2, pos[1] +
+                                   self.rect.height - 2)
+        self.border_up = Border(pos[0] + 2, pos[1], pos[0] + self.rect.width - 2, pos[1])
+        self.border_down = Border(pos[0] + 2, pos[1] + self.rect.height - 2, pos[0] +
+                                  self.rect.width - 2, pos[1] + self.rect.height - 2)
 
 def show_game_over():
     font = pygame.font.Font(None, 74)
