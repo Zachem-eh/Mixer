@@ -1,5 +1,8 @@
 import pygame
 import os
+from . import const
+from .db import db
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -14,3 +17,18 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
     return image
+
+def resize_screen(new_width, new_height):
+    pygame.quit()
+    pygame.init()
+    const.screen = pygame.display.set_mode((new_width, new_height))
+    return const.screen
+
+def lvl_passed():
+    next_lvl = db.next_lvl(const.CURRENT_USER)
+    const.GAMES_MAP.run_game(next_lvl)
+
+def restart_game():
+    const.GAMES_MAP.run_game(
+        db.get_user(const.CURRENT_USER).curr_lvl
+    )

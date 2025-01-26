@@ -3,10 +3,7 @@ import random
 import pygame
 
 from utils import const
-from utils.tools import load_image
-
-size = width, height = 1200, 1000
-
+from utils.tools import load_image, resize_screen
 
 class Board(pygame.sprite.Sprite):
     def __init__(self, group, _width, _height):
@@ -180,8 +177,8 @@ def init():
     global sprite_take, take, bg, board, clock, all, all_sprites, board_group, generators, foods, movable_sprites,\
         trash_group
     _size = _width, _height = 1200, 1000
+    const.screen = resize_screen(*_size)
 
-    const.screen = pygame.display.set_mode(_size)
     clock = pygame.time.Clock()
     all_sprites = pygame.sprite.Group()
     board_group = pygame.sprite.Group()
@@ -189,6 +186,7 @@ def init():
     foods = pygame.sprite.Group()
     movable_sprites = pygame.sprite.Group()
     trash_group = pygame.sprite.Group()
+
 
     bg = load_image('kitchen.png')
     trash = Trash(all_sprites)

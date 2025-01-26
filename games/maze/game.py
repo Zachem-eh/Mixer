@@ -1,18 +1,9 @@
 import sys
 from random import randint
-from utils.tools import load_image
+
+from utils import const
+from utils.tools import load_image, resize_screen, lvl_passed
 import pygame
-
-pygame.init()
-
-FPS = 50
-WIDTH, HEIGHT = size = 1000, 1000
-screen = pygame.display.set_mode(size)
-clock = pygame.time.Clock()
-
-
-lightning_group = pygame.sprite.Group()
-
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
@@ -64,20 +55,23 @@ def load_level(filename):
     max_width = max(map(len, level_map))
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
-
-def terminate():
-    pygame.quit()
-    sys.exit()
-
-
 def init():
-    global tile_images, player_image, tile_width, tile_height, all_sprites, tiles_group, player_group, player, level_x, level_y
+    global tile_images, player_image, tile_width, tile_height, all_sprites, tiles_group, player_group, player, level_x, level_y, \
+        FPS, WIDTH, HEIGHT, lightning_group, clock
     tile_images = {
         'wall': load_image('box.png'),
         'empty': load_image('grass.png'),
         'lightning': load_image('lightning2.png')
     }
     player_image = load_image('capybara.png')
+
+    WIDTH, HEIGHT = size = 1000, 1000
+    const.screen = resize_screen(*size)
+
+    FPS = 50
+    clock = pygame.time.Clock()
+
+    lightning_group = pygame.sprite.Group()
 
     tile_width = tile_height = 50
 
@@ -91,8 +85,6 @@ def init():
 
 
 def handler_event(event):
-    if event.type == pygame.QUIT:
-        terminate()
     if event.type == pygame.KEYDOWN:
         x, y = player.pos
         if event.key == pygame.K_UP and level_map[y - 1][x] != '#':
@@ -111,12 +103,14 @@ def handler_event(event):
         for lightning in lightning_group:
             if player.pos == lightning.pos:
                 lightning.kill()
+                return lvl_passed()
+
 
 
 def post_loop_step():
-    screen.fill('white')
-    tiles_group.draw(screen)
-    lightning_group.draw(screen)
-    player_group.draw(screen)
+    const.screen.fill('white')
+    tiles_group.draw(const.screen)
+    lightning_group.draw(const.screen)
+    player_group.draw(const.screen)
     pygame.display.flip()
     clock.tick(FPS)
