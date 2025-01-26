@@ -18,9 +18,9 @@ class Platform(pygame.sprite.Sprite):
     def update(self, *args):
         if args:
             if args[0] == pygame.K_LEFT and self.rect.x - 10 >= 0:
-                self.rect = self.rect.move(-5, 0)
+                self.rect = self.rect.move(-2, 0)
             elif args[0] == pygame.K_RIGHT and self.rect.x + 10 + self.rect.width <= const.screen.get_width():
-                self.rect = self.rect.move(5, 0)
+                self.rect = self.rect.move(2, 0)
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -30,8 +30,8 @@ class Ball(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.mask = pygame.mask.from_surface(self.image)
-        self.vx = random.choice([-3, 3])
-        self.vy = -3
+        self.vx = random.choice([-1, 1])
+        self.vy = -1
 
     def update(self):
         self.rect = self.rect.move(self.vx, self.vy)
@@ -75,12 +75,12 @@ class Border(pygame.sprite.Sprite):
         super().__init__(all_sprites)
         if x1 == x2:
             self.add(vertical_borders)
-            self.image = pygame.Surface([1, y2 - y1])
-            self.rect = pygame.Rect(x1, y1, 1, y2 - y1)
+            self.image = pygame.Surface([2, y2 - y1])
+            self.rect = pygame.Rect(x1, y1, 2, y2 - y1)
         else:
             self.add(horizontal_borders)
-            self.image = pygame.Surface([x2 - x1, 1])
-            self.rect = pygame.Rect(x1, y1, x2 - x1, 1)
+            self.image = pygame.Surface([x2 - x1, 2])
+            self.rect = pygame.Rect(x1, y1, x2 - x1, 2)
         self.mask = pygame.mask.from_surface(self.image)
 
 class Block(pygame.sprite.Sprite):
@@ -92,11 +92,11 @@ class Block(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
-        self.border_left = Border(pos[0], pos[1], pos[0], pos[1] + self.rect.height)
-        self.border_right = Border(pos[0] + self.rect.width - 1, pos[1], pos[0] + self.rect.width - 1, pos[1] +
-                                   self.rect.height)
-        self.border_up = Border(pos[0], pos[1], pos[0] + self.rect.width, pos[1])
-        self.border_down = Border(pos[0], pos[1] + self.rect.height - 1, pos[0] + self.rect.width, pos[1] + self.rect.height - 1)
+        self.border_left = Border(pos[0], pos[1] + 1, pos[0], pos[1] + self.rect.height - 1)
+        self.border_right = Border(pos[0] + self.rect.width - 2, pos[1] + 1, pos[0] + self.rect.width - 2, pos[1] +
+                                   self.rect.height - 1)
+        self.border_up = Border(pos[0] + 1, pos[1], pos[0] + self.rect.width - 1, pos[1])
+        self.border_down = Border(pos[0] + 1, pos[1] + self.rect.height - 2, pos[0] + self.rect.width - 1, pos[1] + self.rect.height - 2)
 
 def show_game_over():
     font = pygame.font.Font(None, 74)
@@ -128,7 +128,7 @@ def init():
     horizontal_borders = pygame.sprite.Group()
     vertical_borders = pygame.sprite.Group()
     blocks = pygame.sprite.Group()
-    fps = 100
+    fps = 150
 
     Border(5, 5, const.screen.get_width() - 5, 5)
     Border(5, 5, 5, const.screen.get_height() - 5)
