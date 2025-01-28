@@ -120,7 +120,7 @@ class Trash(pygame.sprite.Sprite):
 class Purpose(pygame.sprite.Sprite):
     def __init__(self, group):
         super().__init__(group)
-        purpose_group.add(self)
+        self.add(purpose_group)
         self.image = load_image('purpose.png')
         self.rect = self.image.get_rect()
         self.rect.x = 350
@@ -134,19 +134,61 @@ class Purpose(pygame.sprite.Sprite):
                          (350 + 300, 25))
 
 
+class Particle(pygame.sprite.Sprite):
+    fire = [load_image("star.png")]
+    for scale in (20, 30, 40):
+        fire.append(pygame.transform.scale(fire[0], (scale, scale)))
+    fire = fire[1:]
+
+    def __init__(self, pos, dx, dy):
+        super().__init__(all_sprites)
+        self.add(stars_group)
+        self.image = random.choice(self.fire)
+        self.rect = self.image.get_rect()
+        self.velocity = [dx, dy]
+        self.rect.x, self.rect.y = pos
+        self.gravity = 1
+
+    def update(self):
+        self.velocity[1] += self.gravity
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+        if not self.rect.colliderect(screen_rect):
+            self.kill()
+
+
+stars_group = pygame.sprite.Group()
+def create_particles(position):
+    particle_count = 15
+    numbers = range(-10, 10)
+    for _ in range(particle_count):
+        Particle(position, random.choice(numbers), random.choice(numbers))
+
+
 def terminate():
     pygame.quit()
     sys.exit()
 
+
 def finale_screen():
+    fps = 60
+    clock_finale = pygame.time.Clock()
     fon = load_image('finale_bg.jpg')
-    const.screen.blit(fon, (0, 0))
+    last_ticks = 0
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
+        const.screen.blit(fon, (0, 0))
+        if pygame.time.get_ticks() - last_ticks > 300:
+            create_particles((200, 300))
+            create_particles((1000, 300))
+            last_ticks = pygame.time.get_ticks()
+        stars_group.draw(const.screen)
         pygame.display.flip()
+        stars_group.update()
+        clock_finale.tick(fps)
 
 
 def handler_event(event):
@@ -216,10 +258,10 @@ def handler_event(event):
 
 def init():
     global sprite_take, take, bg, board, clock, all, all_sprites, board_group, generators, foods, movable_sprites,\
-        trash_group, trash, purpose, purpose_group, game_over
+        trash_group, trash, purpose, purpose_group, game_over, screen_rect
     _size = _width, _height = 1200, 1000
     const.screen = resize_screen(*_size)
-
+    screen_rect = (0, 0, _width, _height)
     clock = pygame.time.Clock()
     all_sprites = pygame.sprite.Group()
     board_group = pygame.sprite.Group()
