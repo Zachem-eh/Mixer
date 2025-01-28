@@ -1,5 +1,7 @@
 import random
 
+import sys
+
 import pygame
 
 from utils import const
@@ -123,7 +125,7 @@ class Purpose(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 350
         self.rect.y = 10
-        self.count = 10
+        self.count = 1
 
     def draw_num(self):
         self.font = pygame.font.Font(None, 74)
@@ -132,9 +134,23 @@ class Purpose(pygame.sprite.Sprite):
                          (350 + 300, 25))
 
 
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+def finale_screen():
+    fon = load_image('finale_bg.jpg')
+    const.screen.blit(fon, (0, 0))
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+        pygame.display.flip()
+
 
 def handler_event(event):
-    global take, sprite_take, take_pos, trash_group, purpose_group, purpose
+    global take, sprite_take, take_pos, trash_group, purpose_group, purpose, game_over
     if event.type == pygame.MOUSEBUTTONDOWN:
         if event.button == pygame.BUTTON_LEFT:
             board.get_click(event.pos)
@@ -188,6 +204,9 @@ def handler_event(event):
                         purpose.count -= 1
                         board.board[sprite_take.board_y][sprite_take.board_x] = 0
                         sprite_take.kill()
+                        if purpose.count == 0:
+                            game_over = True
+                            finale_screen()
                     else:
                         sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
                         sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
@@ -197,7 +216,7 @@ def handler_event(event):
 
 def init():
     global sprite_take, take, bg, board, clock, all, all_sprites, board_group, generators, foods, movable_sprites,\
-        trash_group, trash, purpose, purpose_group
+        trash_group, trash, purpose, purpose_group, game_over
     _size = _width, _height = 1200, 1000
     const.screen = resize_screen(*_size)
 
@@ -217,7 +236,7 @@ def init():
     board = Board(all_sprites, 8, 8)
     take = False
     sprite_take = None
-
+    game_over = False
 
 def post_loop_step():
     global all_sprites, bg, purpose
