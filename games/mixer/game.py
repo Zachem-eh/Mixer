@@ -65,28 +65,24 @@ class Generator(pygame.sprite.Sprite):
         self.rect.y = self.board.rect.y + self.board_y * self.board.cell_size
 
     def generate(self):
-        if self.energy > 0:
-            self.energy -= 1
-            left, right = -1, 1
-            dx_dy_list = [-1, 0, 1]
-            while True:
-                if right > self.board.width:
-                    return
-                for dy in dx_dy_list:
-                    for dx in dx_dy_list:
-                        if 0 <= self.board_x + dx < self.board.width and \
-                                0 <= self.board_y + dy < self.board.height and \
-                                self.board.board[self.board_y + dy][self.board_x + dx] == 0 and \
-                                not (dy == 0 and dx == 0):
-                            self.board.board[self.board_y + dy][self.board_x + dx] = (
-                                Food(all_sprites, self.board, self.board_x + dx, self.board_y + dy))
-                            return
-                left, right = left - 1, right + 1
-                dx_dy_list.append(left)
-                dx_dy_list.append(right)
-                dx_dy_list.sort()
-        else:
-            self.energy = 25
+        left, right = -1, 1
+        dx_dy_list = [-1, 0, 1]
+        while True:
+            if right > self.board.width:
+                return
+            for dy in dx_dy_list:
+                for dx in dx_dy_list:
+                    if 0 <= self.board_x + dx < self.board.width and \
+                            0 <= self.board_y + dy < self.board.height and \
+                            self.board.board[self.board_y + dy][self.board_x + dx] == 0 and \
+                            not (dy == 0 and dx == 0):
+                        self.board.board[self.board_y + dy][self.board_x + dx] = (
+                            Food(all_sprites, self.board, self.board_x + dx, self.board_y + dy))
+                        return
+            left, right = left - 1, right + 1
+            dx_dy_list.append(left)
+            dx_dy_list.append(right)
+            dx_dy_list.sort()
 
 
 class Food(pygame.sprite.Sprite):
@@ -125,7 +121,7 @@ class Purpose(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 350
         self.rect.y = 10
-        self.count = 1
+        self.count = 3
 
     def draw_num(self):
         self.font = pygame.font.Font(None, 74)
