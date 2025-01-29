@@ -1,8 +1,12 @@
 import logging
 import os
+import time
 from importlib import import_module
 
+import pygame
+
 from utils import const
+from utils.db import db
 
 log = logging.getLogger(__name__)
 
@@ -23,6 +27,10 @@ log = logging.getLogger(__name__)
     
 """
 
+exclude_folders = [
+    'animations'
+]
+
 
 def load_games(dirname: str = "games") -> 'GameObjectsMap':
     """
@@ -33,7 +41,7 @@ def load_games(dirname: str = "games") -> 'GameObjectsMap':
     """
     all_games = {}
     for game_dir in os.listdir(dirname):
-        if game_dir.startswith("_") or "." in game_dir:
+        if game_dir.startswith("_") or "." in game_dir or game_dir in exclude_folders:
             continue
         try:
             all_games[game_dir] = _load_game(game_dir)
@@ -77,14 +85,25 @@ class GameObjectsMap:
     def __getitem__(self, index):
         return list(self.games.values())[index]
 
-    def run_game(self, index: int = 0):
+    def run_game(self, index: int = 1, name=None):
         """
         Запускает игру по индексу
         По умолчанию, это первая игра
 
         Загружаются игры в алфавитном порядке!
         """
-        list(self.games.values())[index].show()
+        db.update_user(const.CURRENT_USER, start_time=time.time())
+        if not name:
+            game = list(self.games.values())[index - 1]
+            if game.name == "start_screen":  # по индексу нельзя запустить стартовый экран
+                return
+            game.show()
+        else:
+            game = next((g for g in self.games.values() if g.name == name), None)
+            if game:
+                game.show()
+            else:
+                raise Exception("Game not found")
 
 class GameObject:
     """

@@ -1,5 +1,6 @@
-import sqlite3
 import logging
+import sqlite3
+import time
 from datetime import datetime
 
 # логгер для вывода ошибок
@@ -16,24 +17,28 @@ class User:
         username: логин пользователя
         reg_date: дата регистрации
         curr_lvl: текущий уровень
-        lvl_passed: процент прохождения текущего уровня
     """
     username: str
     reg_date: str
     curr_lvl: int
-    lvl_passed: int
 
     def __init__(self, *args):
-        self.username, self.reg_date, self.curr_lvl, self.lvl_passed = args
+        if len(args) == 3:
+            (self.username, self.reg_date, self.curr_lvl), self.start_time = args, None
+        else:
+            self.username, self.reg_date, self.curr_lvl, self.start_time = args
+        self.start_time = float(self.start_time) if self.start_time else None
+
 
 class Database:
     def __init__(self):
         self.db_name = "users"
+        self._create_table()
 
     def connect(self):
         return sqlite3.connect(PATH)
 
-    def _sql(self, query, args, executemany=False):
+    def _sql(self, query, args=(), executemany=False):
         """
         функция выполняет SQL запрос
         """
@@ -57,7 +62,7 @@ class Database:
                 result = c.fetchall()
             return result
         except sqlite3.Error as e:
-            log.error(f"Ошибка при SQL запросе: {e}")
+            log.error(f"Ошибка при SQL запросе: {e}. Query: {query}. Args: {args}")
             return None
         finally:
             if conn:
@@ -71,8 +76,8 @@ class Database:
             f'CREATE TABLE IF NOT EXISTS {self.db_name} ('
             f'username TEXT NOT NULL PRIMARY KEY,'
             f'reg_date TEXT NOT NULL,'  # дата регистрации
-            f'curr_lvl INTEGER NOT NULL DEFAULT 1'  # текущий уровень. По умолчанию первый
-            f'lvl_passed INTEGER NOT NULL DEFAULT 0'  # на сколько пройден % текущий уровень?
+            f'curr_lvl INTEGER NOT NULL DEFAULT 1,'
+            f'start_time TEXT DEFAULT NULL'  # текущий уровень. По умолчанию первый
             f')'
         )
 
@@ -80,16 +85,30 @@ class Database:
         response = self("SELECT * FROM {} WHERE username = ?", (username,))
         return User(*response[0]) if response else None
 
-    def update_user(self, **kwargs):
-        args_query = ', '.join(list(kwargs.keys()))
-        values_query = "?" * len(list(kwargs.values()))
-        query = f"UPDATE {self.db_name} SET {args_query} VALUES ({values_query})"
-        return self(query, tuple(kwargs.values()))
+    def update_user(self, username, **kwargs):
+        if "start_time" in kwargs:
+            kwargs["start_time"] = str(kwargs["start_time"])
+        args_query = ', '.join([f"{key} = ?" for key in kwargs.keys()])
+        query = f"UPDATE {self.db_name} SET {args_query} WHERE username = ?"
+        return self(query, (*tuple(kwargs.values()), username))
 
     def new_user(self, username: str) -> User:
-        if not self.get_user(username):
+        already_user = self.get_user(username)
+        if not already_user:
             reg_date = datetime.now().isoformat()
-            self( F"INSERT INTO {self.db_name} (username, reg_date) VALUES (?, ?)", (username, reg_date))
-            return User(username, reg_date, 1, 0)
-        else: return None
+            self(F"INSERT INTO {self.db_name} (username, reg_date) VALUES (?, ?)", (username, reg_date))
+            return User(username, reg_date, 1)
+        else:
+            return already_user
 
+    def next_lvl(self, username) -> int:
+        user = self.get_user(username)
+        self.update_user(username, start_time=time.time())
+        if user.curr_lvl == 4:
+            return user.curr_lvl
+        user.curr_lvl += 1
+        self.update_user(username, curr_lvl=user.curr_lvl)
+        return user.curr_lvl
+
+
+db = Database()
