@@ -12,15 +12,27 @@ class Platform(pygame.sprite.Sprite):
         self.image = pygame.Surface((100, 20), pygame.SRCALPHA, 32)
         pygame.draw.rect(self.image, 'blue', (0, 0, 100, 20))
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = pos[0]
         self.rect.y = pos[1]
+        self.border_left = Border(pos[0], pos[1] + 2, pos[0], pos[1] + self.rect.height - 2)
+        self.border_right = Border(pos[0] + self.rect.width - 2, pos[1] + 2, pos[0] + self.rect.width - 2, pos[1] +
+                                   self.rect.height - 2)
+        self.border_up = Border(pos[0] + 2, pos[1], pos[0] + self.rect.width - 2, pos[1])
 
     def update(self, *args):
         if args:
             if args[0] == pygame.K_LEFT and self.rect.x - 10 >= 0:
                 self.rect = self.rect.move(-2, 0)
+                self.border_left.rect = self.border_left.rect.move(-2, 0)
+                self.border_right.rect = self.border_right.rect.move(-2, 0)
+                self.border_up.rect = self.border_up.rect.move(-2, 0)
             elif args[0] == pygame.K_RIGHT and self.rect.x + 10 + self.rect.width <= const.screen.get_width():
                 self.rect = self.rect.move(2, 0)
+                self.border_left.rect = self.border_left.rect.move(2, 0)
+                self.border_right.rect = self.border_right.rect.move(2, 0)
+                self.border_up.rect = self.border_up.rect.move(2, 0)
+
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -59,11 +71,16 @@ class Ball(pygame.sprite.Sprite):
             spr_coll.border_up.kill()
             spr_coll.border_down.kill()
             spr_coll.kill()
-        if (pygame.sprite.spritecollideany(self, horizontal_borders) or
-                pygame.sprite.spritecollideany(self, platform_group)):
-            self.vy = -self.vy
-        if pygame.sprite.spritecollideany(self, vertical_borders):
-            self.vx = -self.vx
+        if pygame.sprite.spritecollide(self, platform_group, False, pygame.sprite.collide_mask):
+            if pygame.sprite.spritecollide(self, horizontal_borders, False, pygame.sprite.collide_mask):
+                self.vy = -self.vy
+            if pygame.sprite.spritecollide(self, vertical_borders, False, pygame.sprite.collide_mask):
+                self.vx = -self.vx
+        else:
+            if pygame.sprite.spritecollideany(self, horizontal_borders):
+                self.vy = -self.vy
+            if pygame.sprite.spritecollideany(self, vertical_borders):
+                self.vx = -self.vx
         if not self.rect.colliderect(screen_rect):
             self.kill()
             global game_over
