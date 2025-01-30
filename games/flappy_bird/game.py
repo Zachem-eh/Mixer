@@ -121,10 +121,11 @@ def post_loop_step():
 
     all_sprites.draw(const.screen)
 
+    # todo тут нужно сделать чтобы выводилось сообщение и не менялось/не пропадало пока игру не перезагрузят
     if game_over:
-        add_text('Game over. Press "5" for restart')
+        add_text('Game over. Press "5" for restart', 1000, 550)
     elif collected_lightning:
-        lvl_passed()
+        return lvl_passed()
 
     pygame.display.flip()
     clock.tick(60)

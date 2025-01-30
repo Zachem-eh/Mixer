@@ -26,7 +26,7 @@ while running:
             if event.key == pygame.K_5:
                 tools.restart_game()
             elif event.key == pygame.K_4:
-                tools.lvl_passed()
+                tools.lvl_passed()  # преждевременное прохождение
             else:
                 const.HANDLER_EVENT(event)
         else:

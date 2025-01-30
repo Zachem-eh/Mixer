@@ -14,6 +14,7 @@ SCREEN_HEIGHT = 700  # высота экрана
 GAMES_MAP: Optional['GameObjectsMap'] = None
 
 SIZE = width, height = SCREEN_WIDTH, SCREEN_HEIGHT
+CURR_SIZE = ()
 
 screen: Surface | SurfaceType | None = None  # экран
 

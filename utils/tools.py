@@ -1,4 +1,3 @@
-import logging
 import os
 import time
 
@@ -6,8 +5,6 @@ import pygame
 
 from . import const
 from .db import db
-
-logger = logging.getLogger(__name__)
 
 
 def load_image(name, colorkey=None):
@@ -27,7 +24,7 @@ def load_image(name, colorkey=None):
 
 def _handler_event_next_game(event):
     if event.type == pygame.KEYDOWN and event.key == pygame.K_KP_ENTER:
-        lvl_passed(showed_game_over=False)
+        lvl_passed(showed_game_over=False)  # загружаем следующий уровень
         return 1
     return 0
 
@@ -36,11 +33,11 @@ def resize_screen(new_width, new_height):
     pygame.quit()
     pygame.init()
     const.screen = pygame.display.set_mode((new_width, new_height))
+    const.CURR_SIZE = (new_width, new_height)
     return const.screen
 
 
-def lvl_passed(showed_game_over=True):
-    logger.info("Lvl passed func")
+def lvl_passed(showed_game_over=True,):
     if showed_game_over:
         const.WAIT_NEXT_GAME = True
         add_text(
@@ -50,6 +47,10 @@ def lvl_passed(showed_game_over=True):
     next_lvl = db.next_lvl(const.CURRENT_USER)
     const.GAMES_MAP.run_game(next_lvl)
 
+def lvl_failed(size):
+     add_text(size)
+
+
 
 def restart_game():
     const.WAIT_NEXT_GAME = False
@@ -58,8 +59,11 @@ def restart_game():
     )
 
 
-def add_text(string):
-    _SCREEN_HEIGHT, _SCREEN_WIDTH = const.screen.get_size()
+def add_text(string, *size):
+    if len(size) == 2:
+        _SCREEN_HEIGHT, _SCREEN_WIDTH = size
+    else:
+        _SCREEN_HEIGHT, _SCREEN_WIDTH = const.screen.get_size()
     font = pygame.font.Font(None, 74)
     text = font.render(string, True, (255, 0, 0))
     const.screen.blit(text, (_SCREEN_WIDTH // 2 - text.get_width() // 2, _SCREEN_HEIGHT // 2 - text.get_height() // 2))
