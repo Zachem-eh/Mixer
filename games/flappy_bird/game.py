@@ -50,8 +50,7 @@ class Pipe(pygame.sprite.Sprite):
 class Lightning(pygame.sprite.Sprite):
     def __init__(self, x, y, *groups):
         super().__init__(*groups)
-        self.image = load_image("lightning.png", -1)
-        self.image = pygame.transform.scale(self.image, (LIGHTNING_SIZE, LIGHTNING_SIZE))
+        self.image = load_image("lightning2.png", -1)
         self.rect = self.image.get_rect(center=(x, y))
         self.mask = pygame.mask.from_surface(self.image)
 

@@ -3,6 +3,7 @@ import pygame
 from utils import const, tools
 from utils.tools import load_image
 
+
 game_over = False
 
 class Platform(pygame.sprite.Sprite):
