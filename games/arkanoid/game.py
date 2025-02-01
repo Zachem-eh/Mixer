@@ -149,7 +149,7 @@ def init():
     horizontal_borders = pygame.sprite.Group()
     vertical_borders = pygame.sprite.Group()
     blocks = pygame.sprite.Group()
-    fps = 150
+    fps = 200
 
     Border(5, 5, const.screen.get_width() - 5, 5)
     Border(5, 5, 5, const.screen.get_height() - 5)
