@@ -10,8 +10,7 @@ class Platform(pygame.sprite.Sprite):
     def __init__(self, group, pos):
         super().__init__(group)
         self.add(platform_group)
-        self.image = pygame.Surface((100, 20), pygame.SRCALPHA, 32)
-        pygame.draw.rect(self.image, 'blue', (0, 0, 100, 20))
+        self.image = load_image('platform.jpg')
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = pos[0]
@@ -107,8 +106,7 @@ class Block(pygame.sprite.Sprite):
     def __init__(self, group, pos):
         super().__init__(group)
         self.add(blocks)
-        self.image = pygame.Surface((100, 40), pygame.SRCALPHA, 32)
-        pygame.draw.rect(self.image, 'blue', (0, 0, 100, 40))
+        self.image = load_image('block.jpg')
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
@@ -170,7 +168,7 @@ def init():
 
 def post_loop_step():
     global all_sprites, fps, clock, game_over
-    const.screen.fill('white')
+    const.screen.fill((71, 91, 141))
     all_sprites.draw(const.screen)
     if game_over:
         show_game_over()
