@@ -33,3 +33,4 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
 def add_animation(group):
     AnimatedSprite(load_image("shawarma.png"), 3, 3, 50, 50, group=group)
+    AnimatedSprite(load_image("shawarma.png"), 3, 3, 840, 50, group=group)
