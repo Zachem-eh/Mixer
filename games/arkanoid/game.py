@@ -87,6 +87,7 @@ class Ball(pygame.sprite.Sprite):
             game_over = True
             show_game_over()
 
+
 class Border(pygame.sprite.Sprite):
     def __init__(self, x1, y1, x2, y2):
         super().__init__(all_sprites)
@@ -99,6 +100,7 @@ class Border(pygame.sprite.Sprite):
             self.image = pygame.Surface([x2 - x1, 2])
             self.rect = pygame.Rect(x1, y1, x2 - x1, 2)
         self.mask = pygame.mask.from_surface(self.image)
+
 
 class Block(pygame.sprite.Sprite):
     def __init__(self, group, pos):
@@ -116,12 +118,13 @@ class Block(pygame.sprite.Sprite):
         self.border_down = Border(pos[0] + 2, pos[1] + self.rect.height - 2, pos[0] +
                                   self.rect.width - 2, pos[1] + self.rect.height - 2)
 
+
 def show_game_over():
     font = pygame.font.Font(None, 74)
     text = font.render("Game Over. Tap 5 to restart", True, (255, 0, 0))
     text_rect = text.get_rect(center=(const.screen.get_width() // 2, const.screen.get_height() // 2))
     const.screen.blit(text, text_rect)
-    pygame.display.flip()
+
 
 def handler_event(event):
     global press
@@ -132,6 +135,7 @@ def handler_event(event):
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 press = [False, None]
+
 
 def init():
     global clock, all_sprites, screen_rect, platform_group, horizontal_borders, vertical_borders, blocks, fps, \
@@ -162,10 +166,13 @@ def init():
             Block(all_sprites, (x_0, y_0))
             x_0 += 101
 
+
 def post_loop_step():
     global all_sprites, fps, clock, game_over
     const.screen.fill('white')
     all_sprites.draw(const.screen)
+    if game_over:
+        show_game_over()
     pygame.display.flip()
     if not game_over:
         all_sprites.update()
