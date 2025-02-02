@@ -122,7 +122,7 @@ class Purpose(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 350
         self.rect.y = 10
-        self.count = 3
+        self.count = 1
 
     def draw_num(self):
         self.font = pygame.font.Font(None, 74)
@@ -167,17 +167,20 @@ def terminate():
     sys.exit()
 
 
-def finale_screen():
+def finale_screen(cnt):
     fps = 60
     clock_finale = pygame.time.Clock()
     fon = load_image('finale_bg.jpg')
     last_ticks = 0
+    font = pygame.font.Font(None, 74)
+    text = font.render(f'Вы сделали 3 картошки за {cnt} кликов!', True, (0, 0, 0))
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
         const.screen.blit(fon, (0, 0))
+        const.screen.blit(text, (115, 935))
         if pygame.time.get_ticks() - last_ticks > 300:
             create_particles((200, 300))
             create_particles((1000, 300))
@@ -189,8 +192,9 @@ def finale_screen():
 
 
 def handler_event(event):
-    global take, sprite_take, take_pos, trash_group, purpose_group, purpose, game_over
+    global take, sprite_take, take_pos, trash_group, purpose_group, purpose, game_over, click_count
     if event.type == pygame.MOUSEBUTTONDOWN:
+        click_count += 1
         if event.button == pygame.BUTTON_LEFT:
             board.get_click(event.pos)
         elif event.button == pygame.BUTTON_RIGHT and board.get_cell(event.pos):
@@ -245,7 +249,7 @@ def handler_event(event):
                         sprite_take.kill()
                         if purpose.count == 0:
                             game_over = True
-                            finale_screen()
+                            finale_screen(click_count)
                     else:
                         sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
                         sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
@@ -255,7 +259,7 @@ def handler_event(event):
 
 def init():
     global sprite_take, take, bg, board, clock, all, all_sprites, board_group, generators, foods, movable_sprites,\
-        trash_group, trash, purpose, purpose_group, game_over, screen_rect
+        trash_group, trash, purpose, purpose_group, game_over, screen_rect, click_count
     _size = _width, _height = 1200, 1000
     const.screen = resize_screen(*_size)
     screen_rect = (0, 0, _width, _height)
@@ -276,6 +280,7 @@ def init():
     take = False
     sprite_take = None
     game_over = False
+    click_count = 0
 
 
 def post_loop_step():
