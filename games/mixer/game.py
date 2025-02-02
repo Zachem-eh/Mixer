@@ -7,10 +7,11 @@ import pygame
 from utils import const
 from utils.tools import load_image, resize_screen
 
+
 class Board(pygame.sprite.Sprite):
     def __init__(self, group, _width, _height):
         super().__init__(group)
-        board_group.add(self)
+        self.add(board_group)
         self.width = _width
         self.height = _height
         self.cell_size = const.screen.get_width() // (self.width + 10)
@@ -53,8 +54,8 @@ class Generator(pygame.sprite.Sprite):
 
     def __init__(self, group, _board, x, y):
         super().__init__(group)
-        generators.add(self)
-        movable_sprites.add(self)
+        self.add(generators)
+        self.add(movable_sprites)
         self.board = _board
         self.board_x = x
         self.board_y = y
@@ -90,8 +91,8 @@ class Food(pygame.sprite.Sprite):
 
     def __init__(self, group, _board, x, y):
         super().__init__(group)
-        foods.add(self)
-        movable_sprites.add(self)
+        self.add(foods)
+        self.add(movable_sprites)
         self.board = _board
         self.board_x = x
         self.board_y = y
@@ -106,7 +107,7 @@ class Food(pygame.sprite.Sprite):
 class Trash(pygame.sprite.Sprite):
     def __init__(self, group):
         super().__init__(group)
-        trash_group.add(self)
+        self.add(trash_group)
         self.image = load_image('trash.png')
         self.rect = self.image.get_rect()
         self.rect.x = 1000
@@ -275,6 +276,7 @@ def init():
     take = False
     sprite_take = None
     game_over = False
+
 
 def post_loop_step():
     global all_sprites, bg, purpose
