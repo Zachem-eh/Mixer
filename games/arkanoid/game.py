@@ -4,8 +4,6 @@ from utils import const, tools
 from utils.tools import load_image
 
 
-game_over = False
-
 class Platform(pygame.sprite.Sprite):
     def __init__(self, group, pos):
         super().__init__(group)
@@ -83,9 +81,8 @@ class Ball(pygame.sprite.Sprite):
                 self.vx = -self.vx
         if not self.rect.colliderect(screen_rect):
             self.kill()
-            global game_over
-            game_over = True
-            show_game_over()
+            global ball_out
+            ball_out = True
 
 
 class Border(pygame.sprite.Sprite):
@@ -127,7 +124,7 @@ def show_game_over():
 
 def handler_event(event):
     global press
-    if not game_over:
+    if not game_over and not ball_out:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 press = [True, event.key]
@@ -138,7 +135,7 @@ def handler_event(event):
 
 def init():
     global clock, all_sprites, screen_rect, platform_group, horizontal_borders, vertical_borders, blocks, fps, \
-        platform, ball, press
+        platform, ball, press, game_over, ball_out
     _size = _width, _height = 1200, 1000
     const.screen = tools.resize_screen(*_size)
 
@@ -150,6 +147,8 @@ def init():
     vertical_borders = pygame.sprite.Group()
     blocks = pygame.sprite.Group()
     fps = 200
+    game_over = False
+    ball_out = False
 
     Border(5, 5, const.screen.get_width() - 5, 5)
     Border(5, 5, 5, const.screen.get_height() - 5)
@@ -167,13 +166,13 @@ def init():
 
 
 def post_loop_step():
-    global all_sprites, fps, clock, game_over
+    global all_sprites, fps, clock, game_over, ball_out
     const.screen.fill((71, 91, 141))
     all_sprites.draw(const.screen)
-    if game_over:
+    if ball_out:
         show_game_over()
     pygame.display.flip()
-    if not game_over:
+    if not ball_out:
         all_sprites.update()
         if press[0]:
             platform.update(press[1])
