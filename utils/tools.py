@@ -1,3 +1,5 @@
+import time
+
 import pygame
 import os
 from . import const
@@ -27,11 +29,25 @@ def resize_screen(new_width, new_height):
 
 
 def lvl_passed():
+    result = time.time() - db.get_user(const.CURRENT_USER).start_time
+    add_text(f'Пройдено за {round(result, 2)} секунд. Продолжить - "Enter"')
+    const.READY_NEXT = True
+    const.POST_LOOP_STEP = lambda: ...
+
+def next_game():
     next_lvl = db.next_lvl(const.CURRENT_USER)
     const.GAMES_MAP.run_game(next_lvl)
+    const.READY_NEXT = False
 
 
 def restart_game():
     const.GAMES_MAP.run_game(
         db.get_user(const.CURRENT_USER).curr_lvl
     )
+
+def add_text(text, size=50):
+    font = pygame.font.Font(None, size)
+    text = font.render(text, True, (255, 0, 0))
+    text_rect = text.get_rect(center=(const.screen.get_width() // 2, const.screen.get_height() // 2))
+    const.screen.blit(text, text_rect)
+    pygame.display.flip()

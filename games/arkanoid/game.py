@@ -121,7 +121,7 @@ def show_game_over():
     text_rect = text.get_rect(center=(const.screen.get_width() // 2, const.screen.get_height() // 2))
     const.screen.blit(text, text_rect)
 
-
+ 
 def handler_event(event):
     global press
     if not game_over and not ball_out:

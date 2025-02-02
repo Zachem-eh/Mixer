@@ -5,7 +5,6 @@ from utils import const
 from utils.tools import load_image, resize_screen, lvl_passed
 import pygame
 
-
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites)
@@ -48,7 +47,6 @@ def generate_level(level):
                 Lightning(x, y)
     return new_player, x, y
 
-
 def load_level(filename):
     global level_map
     filename = "data/maps/" + filename
@@ -56,7 +54,6 @@ def load_level(filename):
         level_map = [line.strip() for line in mapFile]
     max_width = max(map(len, level_map))
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
-
 
 def init():
     global tile_images, player_image, tile_width, tile_height, all_sprites, tiles_group, player_group, player, level_x, level_y, \
@@ -107,6 +104,7 @@ def handler_event(event):
             if player.pos == lightning.pos:
                 lightning.kill()
                 return lvl_passed()
+
 
 
 def post_loop_step():

@@ -19,6 +19,10 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_5:
             tools.restart_game()
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_4:
+            tools.lvl_passed()
+        elif const.READY_NEXT and event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+            tools.next_game()
         else:
             const.HANDLER_EVENT(event)
 

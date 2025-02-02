@@ -6,7 +6,6 @@ from utils import const
 from utils.const import height
 from utils.tools import load_image, resize_screen, lvl_passed
 
-
 PIPE_WIDTH = 80
 PIPE_HEIGHT = 300
 PIPES_COUNT = 5
@@ -126,9 +125,6 @@ def post_loop_step():
         text = font.render('Game over. Tap to "5" for restart', True, (255, 0, 0))
         const.screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 2 - text.get_height() // 2))
     elif collected_lightning:
-        font = pygame.font.Font(None, 74)
-        text = font.render("You Win!", True, (0, 255, 0))
-        const.screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 2 - text.get_height() // 2))
         return lvl_passed()
 
     pygame.display.flip()

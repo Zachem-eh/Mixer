@@ -4,14 +4,14 @@ import sys
 
 import pygame
 
-from utils import const
+from utils import const, tools
+from utils.db import db
 from utils.tools import load_image, resize_screen
-
 
 class Board(pygame.sprite.Sprite):
     def __init__(self, group, _width, _height):
         super().__init__(group)
-        self.add(board_group)
+        board_group.add(self)
         self.width = _width
         self.height = _height
         self.cell_size = const.screen.get_width() // (self.width + 10)
@@ -54,8 +54,8 @@ class Generator(pygame.sprite.Sprite):
 
     def __init__(self, group, _board, x, y):
         super().__init__(group)
-        self.add(generators)
-        self.add(movable_sprites)
+        generators.add(self)
+        movable_sprites.add(self)
         self.board = _board
         self.board_x = x
         self.board_y = y
@@ -91,8 +91,8 @@ class Food(pygame.sprite.Sprite):
 
     def __init__(self, group, _board, x, y):
         super().__init__(group)
-        self.add(foods)
-        self.add(movable_sprites)
+        foods.add(self)
+        movable_sprites.add(self)
         self.board = _board
         self.board_x = x
         self.board_y = y
@@ -107,7 +107,7 @@ class Food(pygame.sprite.Sprite):
 class Trash(pygame.sprite.Sprite):
     def __init__(self, group):
         super().__init__(group)
-        self.add(trash_group)
+        trash_group.add(self)
         self.image = load_image('trash.png')
         self.rect = self.image.get_rect()
         self.rect.x = 1000
@@ -128,7 +128,7 @@ class Purpose(pygame.sprite.Sprite):
         self.font = pygame.font.Font(None, 74)
         self.text = self.font.render(str(self.count), True, (0, 0, 0))
         const.screen.blit(self.text,
-                         (350 + 310, 25))
+                         (350 + 300, 25))
 
 
 class Particle(pygame.sprite.Sprite):
@@ -167,20 +167,18 @@ def terminate():
     sys.exit()
 
 
-def finale_screen(cnt):
+def finale_screen():
+    global last_ticks
     fps = 60
     clock_finale = pygame.time.Clock()
     fon = load_image('finale_bg.jpg')
     last_ticks = 0
-    font = pygame.font.Font(None, 74)
-    text = font.render(f'Вы сделали 3 картошки за {cnt} кликов!', True, (0, 0, 0))
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
         const.screen.blit(fon, (0, 0))
-        const.screen.blit(text, (115, 935))
         if pygame.time.get_ticks() - last_ticks > 300:
             create_particles((200, 300))
             create_particles((1000, 300))
@@ -191,10 +189,11 @@ def finale_screen(cnt):
         clock_finale.tick(fps)
 
 
+
+
 def handler_event(event):
-    global take, sprite_take, take_pos, trash_group, purpose_group, purpose, game_over, click_count
+    global take, sprite_take, take_pos, trash_group, purpose_group, purpose, game_over
     if event.type == pygame.MOUSEBUTTONDOWN:
-        click_count += 1
         if event.button == pygame.BUTTON_LEFT:
             board.get_click(event.pos)
         elif event.button == pygame.BUTTON_RIGHT and board.get_cell(event.pos):
@@ -249,7 +248,7 @@ def handler_event(event):
                         sprite_take.kill()
                         if purpose.count == 0:
                             game_over = True
-                            finale_screen(click_count)
+                            finale_screen()
                     else:
                         sprite_take.rect.x = board.rect.x + board.cell_size * sprite_take.board_x
                         sprite_take.rect.y = board.rect.y + board.cell_size * sprite_take.board_y
@@ -259,7 +258,7 @@ def handler_event(event):
 
 def init():
     global sprite_take, take, bg, board, clock, all, all_sprites, board_group, generators, foods, movable_sprites,\
-        trash_group, trash, purpose, purpose_group, game_over, screen_rect, click_count
+        trash_group, trash, purpose, purpose_group, game_over, screen_rect
     _size = _width, _height = 1200, 1000
     const.screen = resize_screen(*_size)
     screen_rect = (0, 0, _width, _height)
@@ -280,15 +279,10 @@ def init():
     take = False
     sprite_take = None
     game_over = False
-    click_count = 0
-
 
 def post_loop_step():
     global all_sprites, bg, purpose
     const.screen.blit(bg, (0, 0))
-    font = pygame.font.Font(None, 55)
-    text = font.render("Соединяй одинаковое и перетащи картошку в окошко!", True, (0, 0, 0))
-    const.screen.blit(text, (65, 925))
     all_sprites.draw(const.screen)
     purpose.draw_num()
     pygame.display.flip()

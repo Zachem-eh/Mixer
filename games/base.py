@@ -5,7 +5,7 @@ from importlib import import_module
 import pygame
 
 from utils import const
-
+from utils.db import db
 
 log = logging.getLogger(__name__)
 
@@ -68,7 +68,6 @@ def _load_game(path):
         init_func
     )
 
-
 class GameObjectsMap:
     """
     Класс для хранения игр
@@ -103,7 +102,6 @@ class GameObjectsMap:
                 game.show()
             else:
                 raise Exception("Game not found")
-
 
 class GameObject:
     """
@@ -141,6 +139,8 @@ class GameObject:
         """
         Инициализирует игру.
         """
+        if self.name != 'start_screen':
+            db.game_started(const.CURRENT_USER)
         self.init_func()
         self.post_loop_step()
 
