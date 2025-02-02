@@ -3,12 +3,14 @@ from utils.db import db
 from utils import const
 from animations.shaurma import add_animation
 
+
 FPS = 10
 WIDTH, HEIGHT = size = 1000, 600
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 
 all_sprites = pygame.sprite.Group()
+
 
 def enter_name(nickname):
     """
@@ -18,7 +20,9 @@ def enter_name(nickname):
     const.CURRENT_USER = nickname
     const.GAMES_MAP.run_game(user.curr_lvl)
 
+
 FUNC = enter_name
+
 
 class InputBox:
     def __init__(self, x, y, w, h, text=''):
@@ -63,13 +67,16 @@ class InputBox:
         _screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
         pygame.draw.rect(_screen, (255, 255, 255), self.rect, 2)
 
+
 def init():
     global input_box
     input_box = InputBox(WIDTH // 2 - 250, HEIGHT // 2 - 100, 500, 32)
     add_animation(all_sprites)
 
+
 def handler_event(event):
     input_box.handle_event(event)
+
 
 def post_loop_step():
     screen.fill('white')

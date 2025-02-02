@@ -4,6 +4,7 @@ from pygame.surface import Surface, SurfaceType
 
 from games.base import GameObjectsMap
 
+
 POST_LOOP_STEP = lambda: ...  # функция, которая вызывается после каждого шага цикла
 HANDLER_EVENT = lambda evevnt: ...  # функция обработчик событий
 

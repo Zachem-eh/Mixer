@@ -6,6 +6,7 @@ from utils import const
 from utils.const import height
 from utils.tools import load_image, resize_screen, lvl_passed
 
+
 PIPE_WIDTH = 80
 PIPE_HEIGHT = 300
 PIPES_COUNT = 5

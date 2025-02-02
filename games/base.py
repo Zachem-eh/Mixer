@@ -6,6 +6,7 @@ import pygame
 
 from utils import const
 
+
 log = logging.getLogger(__name__)
 
 
@@ -67,6 +68,7 @@ def _load_game(path):
         init_func
     )
 
+
 class GameObjectsMap:
     """
     Класс для хранения игр
@@ -101,6 +103,7 @@ class GameObjectsMap:
                 game.show()
             else:
                 raise Exception("Game not found")
+
 
 class GameObject:
     """

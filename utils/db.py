@@ -25,6 +25,7 @@ class User:
     def __init__(self, *args):
         self.username, self.reg_date, self.curr_lvl = args
 
+
 class Database:
     def __init__(self):
         self.db_name = "users"
@@ -100,4 +101,3 @@ class Database:
 
 
 db = Database()
-
