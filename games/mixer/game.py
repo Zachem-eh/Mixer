@@ -122,7 +122,7 @@ class Purpose(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 350
         self.rect.y = 10
-        self.count = 1
+        self.count = 3
 
     def draw_num(self):
         self.font = pygame.font.Font(None, 74)
