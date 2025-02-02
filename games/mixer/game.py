@@ -128,7 +128,7 @@ class Purpose(pygame.sprite.Sprite):
         self.font = pygame.font.Font(None, 74)
         self.text = self.font.render(str(self.count), True, (0, 0, 0))
         const.screen.blit(self.text,
-                         (350 + 300, 25))
+                         (350 + 310, 25))
 
 
 class Particle(pygame.sprite.Sprite):
@@ -286,6 +286,9 @@ def init():
 def post_loop_step():
     global all_sprites, bg, purpose
     const.screen.blit(bg, (0, 0))
+    font = pygame.font.Font(None, 55)
+    text = font.render("Соединяй одинаковое и перетащи картошку в окошко!", True, (0, 0, 0))
+    const.screen.blit(text, (65, 925))
     all_sprites.draw(const.screen)
     purpose.draw_num()
     pygame.display.flip()
