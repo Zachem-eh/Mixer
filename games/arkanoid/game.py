@@ -16,7 +16,7 @@ class Platform(pygame.sprite.Sprite):
         self.border_left = Border(pos[0], pos[1] + 2, pos[0], pos[1] + self.rect.height - 2)
         self.border_right = Border(pos[0] + self.rect.width - 2, pos[1] + 2, pos[0] + self.rect.width - 2, pos[1] +
                                    self.rect.height - 2)
-        self.border_up = Border(pos[0] + 2, pos[1], pos[0] + self.rect.width - 2, pos[1])
+        self.border_up = Border(pos[0] + 1, pos[1], pos[0] + self.rect.width - 1, pos[1])
 
     def update(self, *args):
         if args:
