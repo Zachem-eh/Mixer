@@ -98,10 +98,11 @@ def init():
 def handler_event(event):
     global bird, start_game_update
     if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-        start_game_update = True
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            start_game_update = True
             bird.jump()
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            start_game_update = True
             bird.jump()
 
 
