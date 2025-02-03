@@ -57,11 +57,12 @@ class Lightning(pygame.sprite.Sprite):
 
 
 def init():
-    global all_sprites, pipes, lightnings, bird, game_over, collected_lightning, clock
+    global all_sprites, pipes, lightnings, bird, game_over, collected_lightning, clock, start_game_update
     pygame.display.set_caption("Flappy Bird")
     all_sprites = pygame.sprite.Group()
     pipes = pygame.sprite.Group()
     lightnings = pygame.sprite.Group()
+    start_game_update = False
 
     size = 1000, 550
     const.screen = resize_screen(*size)
@@ -95,8 +96,9 @@ def init():
 
 
 def handler_event(event):
-    global bird
+    global bird, start_game_update
     if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+        start_game_update = True
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             bird.jump()
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -104,10 +106,10 @@ def handler_event(event):
 
 
 def post_loop_step():
-    global game_over, collected_lightning
+    global game_over, collected_lightning, start_game_update
     const.screen.fill((135, 206, 235))
 
-    if not game_over:
+    if not game_over and start_game_update:
         if pygame.sprite.spritecollide(bird, pipes, False, pygame.sprite.collide_mask):
             game_over = True
 
@@ -120,6 +122,11 @@ def post_loop_step():
         all_sprites.update()
 
     all_sprites.draw(const.screen)
+    if not start_game_update:
+        font = pygame.font.Font(None, 74)
+        text = font.render("Press SPACE to start", True, (255, 0, 0))
+        text_rect = text.get_rect(center=(const.screen.get_width() // 2, const.screen.get_height() // 2))
+        const.screen.blit(text, text_rect)
 
     if game_over:
         font = pygame.font.Font(None, 74)

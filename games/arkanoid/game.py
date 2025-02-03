@@ -117,15 +117,17 @@ class Block(pygame.sprite.Sprite):
 
 def show_game_over():
     font = pygame.font.Font(None, 74)
-    text = font.render("Game Over. Tap 5 to restart", True, (255, 0, 0))
+    text = font.render("Game Over. Tap 5 to restart", True, (0, 0, 0))
     text_rect = text.get_rect(center=(const.screen.get_width() // 2, const.screen.get_height() // 2))
     const.screen.blit(text, text_rect)
 
 
 def handler_event(event):
-    global press
+    global press, start_game_update
     if not game_over and not ball_out:
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                start_game_update = True
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 press = [True, event.key]
         if event.type == pygame.KEYUP:
@@ -135,7 +137,7 @@ def handler_event(event):
 
 def init():
     global clock, all_sprites, screen_rect, platform_group, horizontal_borders, vertical_borders, blocks, fps, \
-        platform, ball, press, game_over, ball_out
+        platform, ball, press, game_over, ball_out, start_game_update
     _size = _width, _height = 1200, 1000
     const.screen = tools.resize_screen(*_size)
 
@@ -149,6 +151,7 @@ def init():
     fps = 200
     game_over = False
     ball_out = False
+    start_game_update = False
 
     Border(5, 5, const.screen.get_width() - 5, 5)
     Border(5, 5, 5, const.screen.get_height() - 5)
@@ -166,13 +169,18 @@ def init():
 
 
 def post_loop_step():
-    global all_sprites, fps, clock, game_over, ball_out
+    global all_sprites, fps, clock, game_over, ball_out, start_game_update
     const.screen.fill((71, 91, 141))
     all_sprites.draw(const.screen)
     if ball_out:
         show_game_over()
+    if not start_game_update:
+        font = pygame.font.Font(None, 74)
+        text = font.render("Press SPACE to start", True, (0, 0, 0))
+        text_rect = text.get_rect(center=(const.screen.get_width() // 2, const.screen.get_height() // 2 + 150))
+        const.screen.blit(text, text_rect)
     pygame.display.flip()
-    if not ball_out:
+    if not ball_out and start_game_update:
         all_sprites.update()
         if press[0]:
             platform.update(press[1])
