@@ -54,7 +54,8 @@ class Ball(pygame.sprite.Sprite):
                 offset_ver = ver_spr.rect.x - self.rect.x, ver_spr.rect.y - self.rect.y
                 if self.mask.overlap_area(hor_spr.mask, offset_hor) > self.mask.overlap_area(ver_spr.mask, offset_ver):
                     self.vy = -self.vy
-                elif self.mask.overlap_area(hor_spr.mask, offset_hor) < self.mask.overlap_area(ver_spr.mask, offset_ver):
+                elif self.mask.overlap_area(hor_spr.mask, offset_hor) < self.mask.overlap_area(ver_spr.mask,
+                                                                                               offset_ver):
                     self.vx = -self.vx
                 else:
                     self.vy = -self.vy

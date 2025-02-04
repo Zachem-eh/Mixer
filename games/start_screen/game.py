@@ -3,7 +3,6 @@ from utils.db import db
 from utils import const
 from animations.shaurma import add_animation
 
-
 FPS = 10
 WIDTH, HEIGHT = size = 1000, 600
 screen = pygame.display.set_mode(size)
@@ -48,7 +47,8 @@ class InputBox:
                             FUNC(self.text)
                         self.text = ''
                     else:
-                        error_message = pygame.font.Font(None, 36).render("Введите логин чтобы продолжить, а затем нажмите Enter", True, (255, 0, 0))
+                        error_message = pygame.font.Font(None, 36).render(
+                            "Введите логин чтобы продолжить, а затем нажмите Enter", True, (255, 0, 0))
                         screen.blit(error_message, (WIDTH // 2 - error_message.get_width() // 2, HEIGHT // 2 + 100))
                         pygame.display.flip()
                         pygame.time.wait(2000)

@@ -89,9 +89,10 @@ class Database:
         already_user = self.get_user(username)
         if not already_user:
             reg_date = datetime.now().isoformat()
-            self( F"INSERT INTO {self.db_name} (username, reg_date) VALUES (?, ?)", (username, reg_date))
+            self(F"INSERT INTO {self.db_name} (username, reg_date) VALUES (?, ?)", (username, reg_date))
             return User(username, reg_date, 1)
-        else: return already_user
+        else:
+            return already_user
 
     def next_lvl(self, username) -> int:
         user = self.get_user(username)

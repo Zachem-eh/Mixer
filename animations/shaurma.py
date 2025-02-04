@@ -1,7 +1,6 @@
 import pygame
 from utils.tools import load_image
 
-
 pygame.init()
 
 FPS = 5

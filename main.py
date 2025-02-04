@@ -3,7 +3,7 @@ from utils import const, tools
 from games import base
 
 pygame.init()
-const.screen = pygame.display.set_mode(const.SIZE) # временный скрин
+const.screen = pygame.display.set_mode(const.SIZE)  # временный скрин
 
 games_map = base.load_games()
 const.GAMES_MAP = games_map

@@ -6,9 +6,7 @@ import pygame
 
 from utils import const
 
-
 log = logging.getLogger(__name__)
-
 
 """
 
@@ -73,9 +71,10 @@ class GameObjectsMap:
     """
     Класс для хранения игр
     """
+
     def __init__(
-        self,
-        games: dict[str, 'GameObject'] = {}
+            self,
+            games: dict[str, 'GameObject'] = {}
     ):
         self.games = games
 
@@ -116,13 +115,14 @@ class GameObject:
         handler_event: Функция, обрабатывает нажатия
         init_func: Функция инициализации игры
     """
+
     def __init__(
-        self,
-        module,
-        name,
-        post_loop_step,
-        handler_event,
-        init_func
+            self,
+            module,
+            name,
+            post_loop_step,
+            handler_event,
+            init_func
     ):
         self.module = module
         self.name = name

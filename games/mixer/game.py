@@ -128,7 +128,7 @@ class Purpose(pygame.sprite.Sprite):
         self.font = pygame.font.Font(None, 74)
         self.text = self.font.render(str(self.count), True, (0, 0, 0))
         const.screen.blit(self.text,
-                         (350 + 310, 25))
+                          (350 + 310, 25))
 
 
 class Particle(pygame.sprite.Sprite):
@@ -155,6 +155,8 @@ class Particle(pygame.sprite.Sprite):
 
 
 stars_group = pygame.sprite.Group()
+
+
 def create_particles(position):
     particle_count = 15
     numbers = range(-10, 10)
@@ -243,7 +245,7 @@ def handler_event(event):
                         board.board[sprite_take.board_y][sprite_take.board_x] = 0
                         sprite_take.kill()
                     elif pygame.sprite.spritecollideany(sprite_take, purpose_group) and type(sprite_take) == Food and \
-                        sprite_take.level_gr == 4:
+                            sprite_take.level_gr == 4:
                         purpose.count -= 1
                         board.board[sprite_take.board_y][sprite_take.board_x] = 0
                         sprite_take.kill()
@@ -258,7 +260,7 @@ def handler_event(event):
 
 
 def init():
-    global sprite_take, take, bg, board, clock, all, all_sprites, board_group, generators, foods, movable_sprites,\
+    global sprite_take, take, bg, board, clock, all, all_sprites, board_group, generators, foods, movable_sprites, \
         trash_group, trash, purpose, purpose_group, game_over, screen_rect, click_count
     _size = _width, _height = 1200, 1000
     const.screen = resize_screen(*_size)
@@ -271,7 +273,6 @@ def init():
     movable_sprites = pygame.sprite.Group()
     trash_group = pygame.sprite.Group()
     purpose_group = pygame.sprite.Group()
-
 
     bg = load_image('kitchen.png')
     trash = Trash(all_sprites)
