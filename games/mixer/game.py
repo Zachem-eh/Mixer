@@ -175,7 +175,13 @@ def finale_screen(cnt):
     fon = load_image('finale_bg.jpg')
     last_ticks = 0
     font = pygame.font.Font(None, 74)
-    text = font.render(f'Вы сделали 3 картошки за {cnt} кликов!', True, (0, 0, 0))
+    if str(cnt)[-1] == '1':
+        line = 'клик'
+    elif str(cnt)[-1] in ['2', '3', '4']:
+        line = 'клика'
+    else:
+        line = 'кликов'
+    text = font.render(f'Вы сделали 3 картошки за {cnt} {line}!', True, (0, 0, 0))
 
     while True:
         for event in pygame.event.get():
