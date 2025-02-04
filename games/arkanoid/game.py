@@ -1,4 +1,3 @@
-import random
 import pygame
 from utils import const, tools
 from utils.tools import load_image
@@ -40,7 +39,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.mask = pygame.mask.from_surface(self.image)
-        self.vx = random.choice([-1, 1])
+        self.vx = -1
         self.vy = -1
 
     def update(self):
